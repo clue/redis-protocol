@@ -1,0 +1,22 @@
+{
+    "name": "clue/redis-protocol",
+    "description": "Redis wire protocol implementation in PHP",
+    "keywords": ["redis", "protocol", "parser"],
+    "homepage": "https://github.com/clue/redis-protocol",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Lück",
+            "email": "christian@lueck.tv"
+        }
+    ],
+    "require": {
+        "php": ">=5.3"
+    },
+    "suggest": {
+        "ext-phpiredis": "Optionally use phpiredis extension (https://github.com/nrk/phpiredis) for improved protocol parser"
+    },
+    "autoload": {
+        "psr-0": { "Clue\\Redis\\Protocol": "src" }
+    }
+}
