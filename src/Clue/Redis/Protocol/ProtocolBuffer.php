@@ -35,8 +35,8 @@ class ProtocolBuffer implements ProtocolInterface
 
     public function createMessage(array $args)
     {
-    	return sprintf('*%d%s%s%s', count($args), self::CRLF, implode(array_map(function($arg) {
-            return sprintf('$%d%s%s', strlen($arg), self::CRLF, $arg);
-        }, $args), self::CRLF), self::CRLF);
+    	return sprintf('*%d%s%s%s', count($args), ProtocolBuffer::CRLF, implode(array_map(function($arg) {
+            return sprintf('$%d%s%s', strlen($arg), ProtocolBuffer::CRLF, $arg);
+        }, $args), ProtocolBuffer::CRLF), ProtocolBuffer::CRLF);
     }
 }
