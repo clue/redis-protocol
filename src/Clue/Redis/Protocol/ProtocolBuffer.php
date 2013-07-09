@@ -4,6 +4,7 @@ namespace Clue\Redis\Protocol;
 
 use Clue\Redis\Protocol\ProtocolInterface;
 use Clue\Redis\Protocol\ErrorReplyException;
+use Clue\Redis\Protocol\ParserException;
 use UnderflowException;
 use Exception;
 
@@ -56,7 +57,7 @@ class ProtocolBuffer implements ProtocolInterface
             try {
                 $message = $this->readResponse();
             }
-            catch (Exception $e) {
+            catch (UnderflowException $e) {
                 // restore previous position for next parsing attempt
                 $this->incomingOffset = 0;
                 break;
@@ -74,7 +75,7 @@ class ProtocolBuffer implements ProtocolInterface
         $pos = strpos($this->incomingBuffer, "\r\n", $this->incomingOffset);
 
         if ($pos === false) {
-            throw new Exception('Unable to find CRLF sequence');
+            throw new UnderflowException('Unable to find CRLF sequence');
         }
 
         $ret = (string)substr($this->incomingBuffer, $this->incomingOffset, $pos - $this->incomingOffset);
@@ -87,7 +88,7 @@ class ProtocolBuffer implements ProtocolInterface
     {
         $ret = substr($this->incomingBuffer, $this->incomingOffset, $len);
         if (strlen($ret) !== $len) {
-            throw new Exception('Unable to read requested number of bytes');
+            throw new UnderflowException('Unable to read requested number of bytes');
         }
 
         $this->incomingOffset += $len;
@@ -101,7 +102,8 @@ class ProtocolBuffer implements ProtocolInterface
      * ripped from jdp/redisent, with some minor modifications to read from
      * the incoming buffer instead of issuing a blocking fread on a stream
      *
-     * @throws Exception
+     * @throws UnderflowException if the incoming buffer is incomplete
+     * @throws ParserException if the incoming buffer is invalid
      * @return mixed
      * @link https://github.com/jdp/redisent
      */
@@ -142,7 +144,7 @@ class ProtocolBuffer implements ProtocolInterface
                 $response = intval(substr(trim($reply), 1));
                 break;
             default:
-                throw new Exception("Unknown response: {$reply}");
+                throw new ParserException("Unknown response: {$reply}");
                 break;
         }
         /* Party on */
