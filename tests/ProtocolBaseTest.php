@@ -90,4 +90,15 @@ abstract class ProtocolBaseTest extends TestCase
 
         $this->assertFalse($this->protocol->hasIncoming());
     }
+
+    public function testParsingErrorReply()
+    {
+        $message = "-WRONGTYPE Operation against a key holding the wrong kind of value\r\n";
+
+        $this->protocol->pushIncoming($message);
+        $exception = $this->protocol->popIncoming();
+
+        $this->assertInstanceOf('Exception', $exception);
+        $this->assertEquals('WRONGTYPE Operation against a key holding the wrong kind of value', $exception->getMessage());
+    }
 }
