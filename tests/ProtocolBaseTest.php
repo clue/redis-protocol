@@ -40,6 +40,23 @@ abstract class ProtocolBaseTest extends TestCase
 
         $expected = "*1\r\n$4\r\ntest\r\n";
         $this->assertEquals($expected, $message);
+
+        return $message;
+    }
+
+    /**
+     * @param string $message
+     * @depends testCreateMessageOne
+     */
+    public function testParsingMessageOne($message)
+    {
+        $this->protocol->pushIncoming($message);
+
+        $this->assertTrue($this->protocol->hasIncoming());
+
+        $this->assertEquals(array('test'), $this->protocol->popIncoming());
+
+        $this->assertFalse($this->protocol->hasIncoming());
     }
 
     public function testCreateMessageTwo()
