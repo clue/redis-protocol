@@ -12,7 +12,7 @@ use Clue\Redis\Protocol\ProtocolBuffer;
 class Factory
 {
     /**
-     * instanciate the best available protocol implementation
+     * instantiate the best available protocol implementation
      *
      * @return ProtocolInterface
      */
