@@ -118,4 +118,53 @@ abstract class ProtocolBaseTest extends TestCase
         $this->assertInstanceOf('Clue\Redis\Protocol\ErrorReplyException', $exception);
         $this->assertEquals('WRONGTYPE Operation against a key holding the wrong kind of value', $exception->getMessage());
     }
+
+    public function testParsingBulkReply()
+    {
+        // C: GET mykey
+        $message = "$6\r\nfoobar\r\n";
+        $this->protocol->pushIncoming($message);
+
+        $data = $this->protocol->popIncoming();
+        $this->assertEquals("foobar", $data);
+    }
+
+    public function testParsingNullBulkReply()
+    {
+        // C: GET nonexistingkey
+        $message = "$-1\r\n";
+        $this->protocol->pushIncoming($message);
+
+        $data = $this->protocol->popIncoming();
+        $this->assertEquals(null, $data);
+    }
+
+    public function testParsingEmptyMultiBulkReply()
+    {
+        // C: LRANGE nokey 0 1
+        $message = "*0\r\n";
+        $this->protocol->pushIncoming($message);
+
+        $data = $this->protocol->popIncoming();
+        $this->assertEquals(array(), $data);
+    }
+
+    public function testParsingNullMultiBulkReply()
+    {
+        // C: BLPOP key 1
+        $message = "*-1\r\n";
+        $this->protocol->pushIncoming($message);
+
+        $data = $this->protocol->popIncoming();
+        $this->assertEquals(null, $data);
+    }
+
+    public function testParsingMultiBulkReplyWithNullElement()
+    {
+        $message = "*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
+        $this->protocol->pushIncoming($message);
+
+        $data = $this->protocol->popIncoming();
+        $this->assertEquals(array('foo', null, 'bar'), $data);
+    }
 }
