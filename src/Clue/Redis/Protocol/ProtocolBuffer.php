@@ -122,24 +122,11 @@ class ProtocolBuffer implements ProtocolInterface
                 break;
                 /* Bulk reply */
             case '$':
-                $response = NULL;
-                if ($reply == '$-1') {
-                    break;
-                }
-                $read = 0;
                 $size = intval(substr($reply, 1));
-                if ($size > 0) {
-                    do {
-                        $block_size = ($size - $read) > 1024 ? 1024 : ($size - $read);
-                        $r = $this->readLength($block_size);
-                        if ($r === FALSE) {
-                            throw new Exception('Failed to read response from stream');
-                        } else {
-                            $read += strlen($r);
-                            $response .= $r;
-                        }
-                    } while ($read < $size);
+                if ($size === -1) {
+                    return null;
                 }
+                $response = $this->readLength($size);
                 $this->readLength(2); /* discard crlf */
                 break;
                 /* Multi-bulk reply */
