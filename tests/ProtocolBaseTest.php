@@ -167,4 +167,12 @@ abstract class ProtocolBaseTest extends TestCase
         $data = $this->protocol->popIncoming();
         $this->assertEquals(array('foo', null, 'bar'), $data);
     }
+
+    /**
+     * @expectedException Clue\Redis\Protocol\ParserException
+     */
+    public function testParseError()
+    {
+        $this->protocol->pushIncoming("invalid string\r\n");
+    }
 }
