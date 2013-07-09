@@ -117,9 +117,6 @@ class ProtocolBuffer implements ProtocolInterface
                 /* Inline reply */
             case '+':
                 $response = substr(trim($reply), 1);
-                if ($response === 'OK') {
-                    $response = TRUE;
-                }
                 break;
                 /* Bulk reply */
             case '$':
