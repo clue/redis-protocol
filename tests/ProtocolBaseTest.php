@@ -91,6 +91,23 @@ abstract class ProtocolBaseTest extends TestCase
         $this->assertFalse($this->protocol->hasIncoming());
     }
 
+    public function testParsingStatusReplies()
+    {
+        // C: PING
+        $message = "+PONG\r\n";
+        $this->protocol->pushIncoming($message);
+
+        $data = $this->protocol->popIncoming();
+        $this->assertEquals('PONG', $data);
+
+        // C: SET key value
+        $message = "+OK\r\n";
+        $this->protocol->pushIncoming($message);
+
+        $data = $this->protocol->popIncoming();
+        $this->assertEquals('OK', $data);
+    }
+
     public function testParsingErrorReply()
     {
         $message = "-WRONGTYPE Operation against a key holding the wrong kind of value\r\n";
