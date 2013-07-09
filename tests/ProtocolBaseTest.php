@@ -98,7 +98,7 @@ abstract class ProtocolBaseTest extends TestCase
         $this->protocol->pushIncoming($message);
         $exception = $this->protocol->popIncoming();
 
-        $this->assertInstanceOf('Exception', $exception);
+        $this->assertInstanceOf('Clue\Redis\Protocol\ErrorReplyException', $exception);
         $this->assertEquals('WRONGTYPE Operation against a key holding the wrong kind of value', $exception->getMessage());
     }
 }

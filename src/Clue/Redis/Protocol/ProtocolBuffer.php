@@ -3,6 +3,7 @@
 namespace Clue\Redis\Protocol;
 
 use Clue\Redis\Protocol\ProtocolInterface;
+use Clue\Redis\Protocol\ErrorReplyException;
 use UnderflowException;
 use Exception;
 
@@ -111,7 +112,7 @@ class ProtocolBuffer implements ProtocolInterface
         switch (substr($reply, 0, 1)) {
             /* Error reply */
             case '-':
-                throw new Exception(trim(substr($reply, 4)));
+                return new ErrorReplyException(trim(substr($reply, 1)));
                 break;
                 /* Inline reply */
             case '+':
