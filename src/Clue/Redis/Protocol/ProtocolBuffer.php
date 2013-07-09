@@ -32,11 +32,10 @@ class ProtocolBuffer implements ProtocolInterface
 
     public function popIncoming()
     {
-        $message = array_shift($this->incomingQueue);
-        if ($message === null) {
+        if (!$this->incomingQueue) {
             throw new UnderflowException('Incoming message queue is empty');
         }
-        return $message;
+        return array_shift($this->incomingQueue);
     }
 
     public function hasIncoming()
