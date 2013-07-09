@@ -119,6 +119,16 @@ abstract class ProtocolBaseTest extends TestCase
         $this->assertEquals('WRONGTYPE Operation against a key holding the wrong kind of value', $exception->getMessage());
     }
 
+    public function testParsingIntegerReply()
+    {
+        // C: INCR mykey
+        $message = ":1\r\n";
+        $this->protocol->pushIncoming($message);
+
+        $data = $this->protocol->popIncoming();
+        $this->assertEquals(1, $data);
+    }
+
     public function testParsingBulkReply()
     {
         // C: GET mykey
@@ -157,6 +167,15 @@ abstract class ProtocolBaseTest extends TestCase
 
         $data = $this->protocol->popIncoming();
         $this->assertEquals(null, $data);
+    }
+
+    public function testParsingMultiBulkReplyWithMixedElements()
+    {
+        $message = "*5\r\n:1\r\n:2\r\n:3\r\n:4\r\n$6\r\nfoobar\r\n";
+        $this->protocol->pushIncoming($message);
+
+        $data = $this->protocol->popIncoming();
+        $this->assertEquals(array(1, 2, 3, 4, 'foobar'), $data);
     }
 
     public function testParsingMultiBulkReplyWithNullElement()
