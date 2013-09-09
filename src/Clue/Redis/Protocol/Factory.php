@@ -18,9 +18,6 @@ class Factory
      */
     public static function create()
     {
-        if (function_exists('phpiredis_reader_create')) {
-            return new ProtocolExtPhpiredis();
-        }
         return new ProtocolBuffer();
     }
 }

@@ -13,9 +13,6 @@
     "require": {
         "php": ">=5.3"
     },
-    "suggest": {
-        "ext-phpiredis": "Optionally use phpiredis extension (https://github.com/nrk/phpiredis) for improved protocol parser"
-    },
     "autoload": {
         "psr-0": { "Clue\\Redis\\Protocol": "src" }
     }
