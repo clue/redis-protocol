@@ -3,7 +3,6 @@
 namespace Clue\Redis\Protocol;
 
 use Clue\Redis\Protocol\ProtocolInterface;
-use Clue\Redis\Protocol\ProtocolExtPhpiredis;
 use Clue\Redis\Protocol\ProtocolBuffer;
 
 /**
