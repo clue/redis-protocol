@@ -1,4 +1,4 @@
-# redis-protocol
+# redis-protocol [![Build Status](https://travis-ci.org/clue/redis-protocol.png?branch=master)](https://travis-ci.org/clue/redis-protocol)
 
 A Redis protocol parser / serializer written in PHP 
 
