@@ -113,11 +113,11 @@ class ProtocolBuffer implements ProtocolInterface
         switch (substr($reply, 0, 1)) {
             /* Error reply */
             case '-':
-                return new ErrorReplyException(trim(substr($reply, 1)));
+                $response = new ErrorReplyException(trim(substr($reply, 1)));
                 break;
                 /* Inline reply */
             case '+':
-                $response = substr(trim($reply), 1);
+                $response = new Status(substr(trim($reply), 1));
                 break;
                 /* Bulk reply */
             case '$':
