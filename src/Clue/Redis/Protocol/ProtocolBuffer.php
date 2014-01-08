@@ -54,11 +54,17 @@ class ProtocolBuffer implements ProtocolInterface
     private function tryParsingIncomingMessages()
     {
         do {
-            try {
+            /*try {
                 $message = $this->readResponse();
             }
             catch (UnderflowException $e) {
                 // restore previous position for next parsing attempt
+                $this->incomingOffset = 0;
+                break;
+            }
+            */
+            $message = $this->readResponse();
+            if ($message === -123) {
                 $this->incomingOffset = 0;
                 break;
             }
@@ -75,6 +81,7 @@ class ProtocolBuffer implements ProtocolInterface
         $pos = strpos($this->incomingBuffer, "\r\n", $this->incomingOffset);
 
         if ($pos === false) {
+            return -123;
             throw new UnderflowException('Unable to find CRLF sequence');
         }
 
@@ -88,6 +95,7 @@ class ProtocolBuffer implements ProtocolInterface
     {
         $ret = substr($this->incomingBuffer, $this->incomingOffset, $len);
         if (strlen($ret) !== $len) {
+            return -123;
             throw new UnderflowException('Unable to read requested number of bytes');
         }
 
@@ -109,7 +117,11 @@ class ProtocolBuffer implements ProtocolInterface
      */
     private function readResponse() {
         /* Parse the response based on the reply identifier */
-        $reply = trim($this->readLine());
+        $line = $this->readLine();
+        if ($line === -123) {
+            return -123;
+        }
+        $reply = trim($line);
         switch (substr($reply, 0, 1)) {
             /* Error reply */
             case '-':
@@ -126,7 +138,12 @@ class ProtocolBuffer implements ProtocolInterface
                     return null;
                 }
                 $response = $this->readLength($size);
-                $this->readLength(2); /* discard crlf */
+                if ($response === -123) {
+                    return -123;
+                }
+                if ($this->readLength(2) === -123) { /* discard crlf */
+                    return -123;
+                }
                 break;
                 /* Multi-bulk reply */
             case '*':
@@ -136,7 +153,11 @@ class ProtocolBuffer implements ProtocolInterface
                 }
                 $response = array();
                 for ($i = 0; $i < $count; $i++) {
-                    $response[] = $this->readResponse();
+                    $ret = $this->readResponse();
+                    if ($ret === -123) {
+                        return -123;
+                    }
+                    $response []= $ret;
                 }
                 break;
                 /* Integer reply */
