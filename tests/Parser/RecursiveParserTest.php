@@ -2,7 +2,7 @@
 
 use Clue\Redis\Protocol\Parser\RecursiveParser;
 
-class ProtocolBufferTest extends ProtocolBaseTest
+class RecursiveParserTest extends AbstractParserTest
 {
     protected function createProtocol()
     {

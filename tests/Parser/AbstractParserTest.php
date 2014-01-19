@@ -4,7 +4,7 @@ use Clue\Redis\Protocol\Parser\ParserInterface;
 use Clue\Redis\Protocol\Serializer\RecursiveSerializer;
 // use UnderflowException;
 
-abstract class ProtocolBaseTest extends TestCase
+abstract class AbstractParserTest extends TestCase
 {
     /**
      *
