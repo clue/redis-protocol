@@ -2,6 +2,9 @@
 
 namespace Clue\Redis\Protocol\Serializer;
 
+use Clue\Redis\Protocol\Model\Status;
+use InvalidArgumentException;
+
 class RecursiveSerializer implements SerializerInterface
 {
     const CRLF = "\r\n";
@@ -24,11 +27,11 @@ class RecursiveSerializer implements SerializerInterface
         } else if ($data instanceof ErrorReplyException) {
             return $this->createErrorReply($data->getmessage());
         } else if ($data instanceof Status) {
-            return $this->createStatusReply($data->getMessage());
+            return $this->createStatusReply($data);
         } else if (is_array($data)) {
             return $this->createMultiBulkReply($data);
         } else {
-            throw new ParserException('Invalid data type passed for serialization');
+            throw new InvalidArgumentException('Invalid data type passed for serialization');
         }
     }
 
