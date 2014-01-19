@@ -15,11 +15,6 @@ class RecursiveSerializer implements SerializerInterface
         }, $args), ProtocolBuffer::CRLF), ProtocolBuffer::CRLF);
     }
 
-    /**
-     *
-     * @param array|string|ErrorReplyException|Status $data
-     * @return string
-     */
     public function createReplyMessage($data)
     {
         if (is_string($data) || $data === null) {
@@ -74,6 +69,9 @@ class RecursiveSerializer implements SerializerInterface
 
     public function createErrorReply($message)
     {
+        if ($message instanceof ErrorReplyException) {
+            $message = $message->getMessage();
+        }
         /* error status reply */
         return '-' . $message . self::CRLF;
     }
