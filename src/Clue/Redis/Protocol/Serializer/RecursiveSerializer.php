@@ -13,10 +13,6 @@ class RecursiveSerializer implements SerializerInterface
     public function createRequestMessage(array $args)
     {
         return $this->createMultiBulkReply(array_map('strval', $args));
-
-        return sprintf('*%d%s%s%s', count($args), ProtocolBuffer::CRLF, implode(array_map(function($arg) {
-            return sprintf('$%d%s%s', strlen($arg), ProtocolBuffer::CRLF, $arg);
-        }, $args), ProtocolBuffer::CRLF), ProtocolBuffer::CRLF);
     }
 
     public function createReplyMessage($data)
@@ -48,7 +44,7 @@ class RecursiveSerializer implements SerializerInterface
             return '$-1' . self::CRLF;
         }
         /* bulk reply */
-        return sprintf('$%d%s%s%s', strlen($data), self::CRLF, $data, self::CRLF);
+        return '$' . strlen($data) . self::CRLF . $data . self::CRLF;
     }
 
     public function createMultiBulkReply($data)
