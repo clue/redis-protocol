@@ -10,7 +10,7 @@ use UnderflowException;
 use Exception;
 
 /**
- * Simple redis wire protocol parser and serializer
+ * Simple recursive redis wire protocol parser
  *
  * Heavily influenced by blocking parser implementation from jpd/redisent.
  *
@@ -43,13 +43,6 @@ class RecursiveParser implements ParserInterface
     public function hasIncoming()
     {
         return ($this->incomingQueue) ? true : false;
-    }
-
-    public function createMessage(array $args)
-    {
-    	return sprintf('*%d%s%s%s', count($args), RecursiveParser::CRLF, implode(array_map(function($arg) {
-            return sprintf('$%d%s%s', strlen($arg), RecursiveParser::CRLF, $arg);
-        }, $args), RecursiveParser::CRLF), RecursiveParser::CRLF);
     }
 
     private function tryParsingIncomingMessages()

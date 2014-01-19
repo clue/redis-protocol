@@ -31,6 +31,4 @@ interface ParserInterface
      * @see self::popIncoming()
      */
     public function hasIncoming();
-
-    public function createMessage(array $parts);
 }
