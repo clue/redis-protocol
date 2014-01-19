@@ -1,22 +1,30 @@
 <?php
 
-use Clue\Redis\Protocol\ProtocolInterface;
+use Clue\Redis\Protocol\Parser\ParserInterface;
+use Clue\Redis\Protocol\Serializer\RecursiveSerializer;
 // use UnderflowException;
 
 abstract class ProtocolBaseTest extends TestCase
 {
     /**
      *
-     * @var ProtocolInterface
+     * @var ParserInterface
      */
     protected $protocol;
 
     abstract protected function createProtocol();
 
+    protected function createMessage($data)
+    {
+        $serializer = new RecursiveSerializer();
+
+        return $serializer->createRequestMessage($data);
+    }
+
     public function setUp()
     {
         $this->protocol = $this->createProtocol();
-        $this->assertInstanceOf('Clue\Redis\Protocol\ProtocolInterface', $this->protocol);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Parser\ParserInterface', $this->protocol);
     }
 
     public function testEmptyHasNoIncoming()
@@ -34,7 +42,7 @@ abstract class ProtocolBaseTest extends TestCase
 
     public function testCreateMessageOne()
     {
-        $message = $this->protocol->createMessage(array(
+        $message = $this->createMessage(array(
             'test'
         ));
 
@@ -61,7 +69,7 @@ abstract class ProtocolBaseTest extends TestCase
 
     public function testCreateMessageTwo()
     {
-        $message = $this->protocol->createMessage(array(
+        $message = $this->createMessage(array(
             'test',
             'second'
         ));
@@ -115,7 +123,7 @@ abstract class ProtocolBaseTest extends TestCase
         $this->protocol->pushIncoming($message);
         $exception = $this->protocol->popIncoming();
 
-        $this->assertInstanceOf('Clue\Redis\Protocol\ErrorReplyException', $exception);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\ErrorReplyException', $exception);
         $this->assertEquals('WRONGTYPE Operation against a key holding the wrong kind of value', $exception->getMessage());
     }
 
@@ -188,7 +196,7 @@ abstract class ProtocolBaseTest extends TestCase
     }
 
     /**
-     * @expectedException Clue\Redis\Protocol\ParserException
+     * @expectedException Clue\Redis\Protocol\Parser\ParserException
      */
     public function testParseError()
     {

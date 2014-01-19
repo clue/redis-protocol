@@ -6,8 +6,10 @@ class FactoryTest extends TestCase
 {
     public function testCreate()
     {
-        $protocol = Factory::create();
+        $factory = new Factory();
 
-        $this->assertInstanceOf('Clue\Redis\Protocol\ProtocolInterface', $protocol);
+        $protocol = $factory->createParser();
+
+        $this->assertInstanceOf('Clue\Redis\Protocol\Parser\ParserInterface', $protocol);
     }
 }
