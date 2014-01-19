@@ -2,7 +2,7 @@
 
 namespace Clue\Redis\Protocol\Serializer;
 
-class Serializer
+class RecursiveSerializer implements SerializerInterface
 {
     const CRLF = "\r\n";
 

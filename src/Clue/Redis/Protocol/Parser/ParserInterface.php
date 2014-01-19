@@ -4,7 +4,7 @@ namespace Clue\Redis\Protocol\Parser;
 
 use UnderflowException;
 
-interface ProtocolInterface
+interface ParserInterface
 {
     /**
      * push a chunk of the redis protocol response into the buffer

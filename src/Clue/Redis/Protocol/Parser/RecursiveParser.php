@@ -2,7 +2,7 @@
 
 namespace Clue\Redis\Protocol\Parser;
 
-use Clue\Redis\Protocol\Parser\ProtocolInterface;
+use Clue\Redis\Protocol\Parser\ParserInterface;
 use Clue\Redis\Protocol\Model\ErrorReplyException;
 use Clue\Redis\Protocol\Model\Status;
 use Clue\Redis\Protocol\Parser\ParserException;
@@ -17,7 +17,7 @@ use Exception;
  * @link https://github.com/jdp/redisent
  * @link http://redis.io/topics/protocol
  */
-class ProtocolBuffer implements ProtocolInterface
+class RecursiveParser implements ParserInterface
 {
     const CRLF = "\r\n";
 
@@ -47,9 +47,9 @@ class ProtocolBuffer implements ProtocolInterface
 
     public function createMessage(array $args)
     {
-    	return sprintf('*%d%s%s%s', count($args), ProtocolBuffer::CRLF, implode(array_map(function($arg) {
-            return sprintf('$%d%s%s', strlen($arg), ProtocolBuffer::CRLF, $arg);
-        }, $args), ProtocolBuffer::CRLF), ProtocolBuffer::CRLF);
+    	return sprintf('*%d%s%s%s', count($args), RecursiveParser::CRLF, implode(array_map(function($arg) {
+            return sprintf('$%d%s%s', strlen($arg), RecursiveParser::CRLF, $arg);
+        }, $args), RecursiveParser::CRLF), RecursiveParser::CRLF);
     }
 
     private function tryParsingIncomingMessages()
