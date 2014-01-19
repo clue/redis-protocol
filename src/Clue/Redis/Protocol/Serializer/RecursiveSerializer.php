@@ -4,6 +4,7 @@ namespace Clue\Redis\Protocol\Serializer;
 
 use Clue\Redis\Protocol\Model\Status;
 use InvalidArgumentException;
+use Exception;
 
 class RecursiveSerializer implements SerializerInterface
 {
@@ -24,8 +25,8 @@ class RecursiveSerializer implements SerializerInterface
             return $this->createBulkReply($data);
         } else if (is_int($data) || is_float($data) || is_bool($data)) {
             return $this->createIntegerReply($data);
-        } else if ($data instanceof ErrorReplyException) {
-            return $this->createErrorReply($data->getmessage());
+        } else if ($data instanceof Exception) {
+            return $this->createErrorReply($data);
         } else if ($data instanceof Status) {
             return $this->createStatusReply($data);
         } else if (is_array($data)) {
@@ -72,7 +73,7 @@ class RecursiveSerializer implements SerializerInterface
 
     public function createErrorReply($message)
     {
-        if ($message instanceof ErrorReplyException) {
+        if ($message instanceof Exception) {
             $message = $message->getMessage();
         }
         /* error status reply */
