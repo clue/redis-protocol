@@ -1,12 +1,14 @@
 <?php
 
+namespace Clue\Redis\Protocol\Serializer;
+
 class Serializer
 {
     const CRLF = "\r\n";
 
     public function createRequestMessage(array $args)
     {
-        return $this->createReplyMessage(array_map('strval', $args));
+        return $this->createMultiBulkReply(array_map('strval', $args));
 
         return sprintf('*%d%s%s%s', count($args), ProtocolBuffer::CRLF, implode(array_map(function($arg) {
             return sprintf('$%d%s%s', strlen($arg), ProtocolBuffer::CRLF, $arg);

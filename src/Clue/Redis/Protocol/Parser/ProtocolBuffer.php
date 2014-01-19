@@ -1,10 +1,11 @@
 <?php
 
-namespace Clue\Redis\Protocol;
+namespace Clue\Redis\Protocol\Parser;
 
-use Clue\Redis\Protocol\ProtocolInterface;
-use Clue\Redis\Protocol\ErrorReplyException;
-use Clue\Redis\Protocol\ParserException;
+use Clue\Redis\Protocol\Parser\ProtocolInterface;
+use Clue\Redis\Protocol\Model\ErrorReplyException;
+use Clue\Redis\Protocol\Model\Status;
+use Clue\Redis\Protocol\Parser\ParserException;
 use UnderflowException;
 use Exception;
 

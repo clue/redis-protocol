@@ -1,6 +1,6 @@
 <?php
 
-namespace Clue\Redis\Protocol;
+namespace Clue\Redis\Protocol\Parser;
 
 use UnderflowException;
 
