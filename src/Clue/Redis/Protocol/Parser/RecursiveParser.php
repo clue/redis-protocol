@@ -3,7 +3,11 @@
 namespace Clue\Redis\Protocol\Parser;
 
 use Clue\Redis\Protocol\Parser\ParserInterface;
+use Clue\Redis\Protocol\Model\ModelInterface;
+use Clue\Redis\Protocol\Model\BulkReply;
 use Clue\Redis\Protocol\Model\ErrorReply;
+use Clue\Redis\Protocol\Model\IntegerReply;
+use Clue\Redis\Protocol\Model\MultiBulkReply;
 use Clue\Redis\Protocol\Model\StatusReply;
 use Clue\Redis\Protocol\Parser\ParserException;
 use UnderflowException;
@@ -98,7 +102,7 @@ class RecursiveParser implements ParserInterface
      *
      * @throws UnderflowException if the incoming buffer is incomplete
      * @throws ParserException if the incoming buffer is invalid
-     * @return mixed
+     * @return ModelInterface
      * @link https://github.com/jdp/redisent
      */
     private function readResponse() {
@@ -117,25 +121,26 @@ class RecursiveParser implements ParserInterface
             case '$':
                 $size = intval(substr($reply, 1));
                 if ($size === -1) {
-                    return null;
+                    return new BulkReply(null);
                 }
-                $response = $this->readLength($size);
+                $response = new BulkReply($this->readLength($size));
                 $this->readLength(2); /* discard crlf */
                 break;
                 /* Multi-bulk reply */
             case '*':
                 $count = intval(substr($reply, 1));
                 if ($count == '-1') {
-                    return NULL;
+                    return new MultiBulkReply(null);
                 }
                 $response = array();
                 for ($i = 0; $i < $count; $i++) {
                     $response[] = $this->readResponse();
                 }
+                $response = new MultiBulkReply($response);
                 break;
                 /* Integer reply */
             case ':':
-                $response = intval(substr(trim($reply), 1));
+                $response = new IntegerReply(substr(trim($reply), 1));
                 break;
             default:
                 throw new ParserException("Unknown response: {$reply}");

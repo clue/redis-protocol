@@ -3,6 +3,7 @@
 namespace Clue\Redis\Protocol\Parser;
 
 use UnderflowException;
+use Clue\Redis\Protocol\Model\ModelInterface;
 
 interface ParserInterface
 {
@@ -17,7 +18,7 @@ interface ParserInterface
     /**
      * parse the response in the incoming buffer and return a parsed message array
      *
-     * @return array
+     * @return ModelInterface
      * @throws UnderflowException if the incoming buffer does not contain a full response
      * @see self::pushIncoming() to add received data to the buffer
      * @see self::hasIncoming() to check if there's a complete message in the buffer and calling this method is safe
