@@ -6,7 +6,7 @@ namespace Clue\Redis\Protocol\Model;
  *
  * @link http://redis.io/topics/protocol#status-reply
  */
-class Status
+class StatusReply
 {
     private $message;
 

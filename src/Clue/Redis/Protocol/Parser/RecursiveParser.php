@@ -3,8 +3,8 @@
 namespace Clue\Redis\Protocol\Parser;
 
 use Clue\Redis\Protocol\Parser\ParserInterface;
-use Clue\Redis\Protocol\Model\ErrorReplyException;
-use Clue\Redis\Protocol\Model\Status;
+use Clue\Redis\Protocol\Model\ErrorReply;
+use Clue\Redis\Protocol\Model\StatusReply;
 use Clue\Redis\Protocol\Parser\ParserException;
 use UnderflowException;
 use Exception;
@@ -107,11 +107,11 @@ class RecursiveParser implements ParserInterface
         switch (substr($reply, 0, 1)) {
             /* Error reply */
             case '-':
-                $response = new ErrorReplyException(trim(substr($reply, 1)));
+                $response = new ErrorReply(trim(substr($reply, 1)));
                 break;
                 /* Inline reply */
             case '+':
-                $response = new Status(substr(trim($reply), 1));
+                $response = new StatusReply(substr(trim($reply), 1));
                 break;
                 /* Bulk reply */
             case '$':
