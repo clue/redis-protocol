@@ -4,6 +4,7 @@ namespace Clue\Redis\Protocol\Parser;
 
 use UnderflowException;
 use Clue\Redis\Protocol\Model\ModelInterface;
+use Clue\Redis\Protocol\Parser\ParserException;
 
 interface ParserInterface
 {
@@ -11,6 +12,7 @@ interface ParserInterface
      * push a chunk of the redis protocol response into the buffer
      *
      * @param string $dataChunk
+     * @throws ParserException if the message can not be parsed
      * @see self::popIncoming()
      */
     public function pushIncoming($dataChunk);

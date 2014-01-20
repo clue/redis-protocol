@@ -2,9 +2,9 @@
 
 namespace Clue\Redis\Protocol\Parser;
 
-use InvalidArgumentException;
+use UnexpectedValueException;
 
-class ParserException extends InvalidArgumentException
+class ParserException extends UnexpectedValueException
 {
 
 }
