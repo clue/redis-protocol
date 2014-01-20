@@ -62,7 +62,7 @@ abstract class AbstractParserTest extends TestCase
 
         $this->assertTrue($this->protocol->hasIncoming());
 
-        $this->assertEquals(array('test'), $this->protocol->popIncoming());
+        $this->assertEquals(array('test'), $this->protocol->popIncoming()->getValueNative());
 
         $this->assertFalse($this->protocol->hasIncoming());
     }
@@ -94,7 +94,7 @@ abstract class AbstractParserTest extends TestCase
 
         $this->assertTrue($this->protocol->hasIncoming());
 
-        $this->assertEquals(array('test', 'second'), $this->protocol->popIncoming());
+        $this->assertEquals(array('test', 'second'), $this->protocol->popIncoming()->getValueNative());
 
         $this->assertFalse($this->protocol->hasIncoming());
     }
@@ -105,14 +105,14 @@ abstract class AbstractParserTest extends TestCase
         $message = "+PONG\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncoming()->getValueNative();
         $this->assertEquals('PONG', $data);
 
         // C: SET key value
         $message = "+OK\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncoming()->getValueNative();
         $this->assertEquals('OK', $data);
     }
 
@@ -123,7 +123,8 @@ abstract class AbstractParserTest extends TestCase
         $this->protocol->pushIncoming($message);
         $exception = $this->protocol->popIncoming();
 
-        $this->assertInstanceOf('Clue\Redis\Protocol\Model\ErrorReplyException', $exception);
+        $this->assertInstanceOf('Exception', $exception);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\ErrorReply', $exception);
         $this->assertEquals('WRONGTYPE Operation against a key holding the wrong kind of value', $exception->getMessage());
     }
 
@@ -133,7 +134,7 @@ abstract class AbstractParserTest extends TestCase
         $message = ":1\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncoming()->getValueNative();
         $this->assertEquals(1, $data);
     }
 
@@ -143,7 +144,7 @@ abstract class AbstractParserTest extends TestCase
         $message = "$6\r\nfoobar\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncoming()->getValueNative();
         $this->assertEquals("foobar", $data);
     }
 
@@ -153,7 +154,7 @@ abstract class AbstractParserTest extends TestCase
         $message = "$-1\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncoming()->getValueNative();
         $this->assertEquals(null, $data);
     }
 
@@ -163,7 +164,7 @@ abstract class AbstractParserTest extends TestCase
         $message = "*0\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncoming()->getValueNative();
         $this->assertEquals(array(), $data);
     }
 
@@ -173,7 +174,7 @@ abstract class AbstractParserTest extends TestCase
         $message = "*-1\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncoming()->getValueNative();
         $this->assertEquals(null, $data);
     }
 
@@ -182,7 +183,7 @@ abstract class AbstractParserTest extends TestCase
         $message = "*5\r\n:1\r\n:2\r\n:3\r\n:4\r\n$6\r\nfoobar\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncoming()->getValueNative();
         $this->assertEquals(array(1, 2, 3, 4, 'foobar'), $data);
     }
 
@@ -191,7 +192,7 @@ abstract class AbstractParserTest extends TestCase
         $message = "*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncoming()->getValueNative();
         $this->assertEquals(array('foo', null, 'bar'), $data);
     }
 
