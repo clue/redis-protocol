@@ -34,8 +34,6 @@ class RecursiveSerializer implements SerializerInterface
             return new IntegerReply($data);
         } else if ($data instanceof Exception) {
             return new ErrorReply($data->getMessage());
-        } else if ($data instanceof Status) {
-            return new StatusReply($data);
         } else if (is_array($data)) {
             $models = array();
             foreach ($data as $one) {
