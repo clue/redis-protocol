@@ -119,7 +119,7 @@ class RecursiveParser implements ParserInterface
                 break;
                 /* Bulk reply */
             case '$':
-                $size = intval(substr($reply, 1));
+                $size = (int)substr($reply, 1);
                 if ($size === -1) {
                     return new BulkReply(null);
                 }
@@ -134,8 +134,8 @@ class RecursiveParser implements ParserInterface
                 break;
                 /* Multi-bulk reply */
             case '*':
-                $count = intval(substr($reply, 1));
-                if ($count == '-1') {
+                $count = (int)substr($reply, 1);
+                if ($count === -1) {
                     return new MultiBulkReply(null);
                 }
                 $response = array();
@@ -153,7 +153,7 @@ class RecursiveParser implements ParserInterface
                 $response = new IntegerReply(substr($reply, 1));
                 break;
             default:
-                throw new ParserException("Unknown response: {$reply}");
+                throw new ParserException('Invalid message can not be parsed: "' . $reply . '"');
                 break;
         }
         /* Party on */
