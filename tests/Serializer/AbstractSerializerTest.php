@@ -19,56 +19,63 @@ abstract class AbstractSerializerTest extends TestCase
 
     public function testIntegerReply()
     {
-        //$this->assertEquals(":1\r\n", $this->serializer->createIntegerReply(1));
-        $this->assertEquals(":0\r\n", $this->serializer->createReplyModel(0)->getSerialized());
+        $model = $this->serializer->createReplyModel(0);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\IntegerReply', $model);
+        $this->assertEquals(0, $model->getValueNative());
+    }
 
-        $this->assertEquals(":-12\r\n", $this->serializer->createReplyModel(-12.99)->getSerialized());
-        $this->assertEquals(":14\r\n", $this->serializer->createReplyModel(14.99)->getSerialized());
+    public function testFloatCastIntegerReply()
+    {
+        $model = $this->serializer->createReplyModel(-12.99);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\IntegerReply', $model);
+        $this->assertEquals(-12, $model->getValueNative());
 
-        $this->assertEquals(":1\r\n", $this->serializer->createReplyModel(true)->getSerialized());
-        $this->assertEquals(":0\r\n", $this->serializer->createReplyModel(false)->getSerialized());
+        $model = $this->serializer->createReplyModel(14.99);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\IntegerReply', $model);
+        $this->assertEquals(14, $model->getValueNative());
+    }
+
+    public function testBooleanCastIntegerReply()
+    {
+        $model = $this->serializer->createReplyModel(true);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\IntegerReply', $model);
+        $this->assertEquals(1, $model->getValueNative());
+
+        $model = $this->serializer->createReplyModel(false);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\IntegerReply', $model);
+        $this->assertEquals(0, $model->getValueNative());
     }
 
     public function testStringReply()
     {
-        //$this->assertEquals("$4\r\ntest\r\n", $this->serializer->createBulkReply('test'));
-        $this->assertEquals("$4\r\ntest\r\n", $this->serializer->createReplyModel('test')->getSerialized());
+        $model = $this->serializer->createReplyModel('test');
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\BulkReply', $model);
+        $this->assertEquals('test', $model->getValueNative());
     }
 
-    public function testNullBulkReply()
+    public function testNullCastNullBulkReply()
     {
-        //$this->assertEquals("$-1\r\n", $this->serializer->createBulkReply(null));
-        $this->assertEquals("$-1\r\n", $this->serializer->createReplyModel(null)->getSerialized());
+        $model = $this->serializer->createReplyModel(null);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\BulkReply', $model);
+        $this->assertEquals(null, $model->getValueNative());
     }
 
-    /**
-     * xx@depends testStringReply
-     */
-    public function testMultiBulkReply()
+    public function testEmptyArrayMultiBulkReply()
     {
-        //$this->assertEquals("*1\r\n$4\r\ntest\r\n", $this->serializer->createMultiBulkReply(array('test')));
-        $this->assertEquals("*1\r\n$4\r\ntest\r\n", $this->serializer->createReplyModel(array('test'))->getSerialized());
-
-        //$this->assertEquals("*0\r\n", $this->serializer->createMultiBulkReply(array()));
-        $this->assertEquals("*0\r\n", $this->serializer->createReplyModel(array())->getSerialized());
+        $model = $this->serializer->createReplyModel(array());
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\MultiBulkReply', $model);
+        $this->assertEquals(array(), $model->getValueNative());
     }
 
-    public function testNullMultiBulkReply()
+    public function testArrayMultiBulkReply()
     {
-       // $this->assertEquals("*-1\r\n", $this->serializer->createMultiBulkReply(null));
-    }
-
-    public function testStatusReply()
-    {
-        //$this->assertEquals("+OK\r\n", $this->serializer->createStatusReply('OK'));
-        //$this->assertEquals("+STATUS\r\n", $this->serializer->createStatusReply(new Status('STATUS')));
-        //$this->assertEquals("+AUTO\r\n", $this->serializer->createReplyModel(new Status('AUTO')));
+        $model = $this->serializer->createReplyModel(array('test', 123));
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\MultiBulkReply', $model);
+        $this->assertEquals(array('test', 123), $model->getValueNative());
     }
 
     public function testErrorReply()
     {
-        //$this->assertEquals("-ERR invalid\r\n", $this->serializer->createErrorReply('ERR invalid'));
-        //$this->assertEquals("-WRONGTYPE invalid type\r\n", $this->serializer->createErrorReply(new ErrorReplyException('WRONGTYPE invalid type')));
         $this->assertEquals("-ERR failure\r\n", $this->serializer->createReplyModel(new Exception('ERR failure'))->getSerialized());
     }
 
