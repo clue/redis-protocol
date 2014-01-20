@@ -14,7 +14,7 @@ class RecursiveSerializer implements SerializerInterface
 {
     public function createRequestMessage(array $args)
     {
-        return $this->createRequestModel($args)->getSerialized();
+        return $this->createRequestModel($args)->getMessageSerialized();
     }
 
     public function createRequestModel(array $args)

@@ -76,7 +76,7 @@ abstract class AbstractSerializerTest extends TestCase
 
     public function testErrorReply()
     {
-        $this->assertEquals("-ERR failure\r\n", $this->serializer->createReplyModel(new Exception('ERR failure'))->getSerialized());
+        $this->assertEquals("-ERR failure\r\n", $this->serializer->createReplyModel(new Exception('ERR failure'))->getMessageSerialized());
     }
 
     /**

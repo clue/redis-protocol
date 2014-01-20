@@ -26,7 +26,7 @@ class ErrorReply extends Exception implements ModelInterface
         return $this->getMessage();
     }
 
-    public function getSerialized()
+    public function getMessageSerialized()
     {
         /* error status reply */
         return '-' . $this->getMessage() . self::CRLF;

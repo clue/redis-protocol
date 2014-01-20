@@ -23,7 +23,7 @@ class IntegerReply implements ModelInterface
         return $this->value;
     }
 
-    public function getSerialized()
+    public function getMessageSerialized()
     {
         return ':' . $this->value . self::CRLF;
     }

@@ -16,7 +16,7 @@ class MultiBulkReplyTest extends AbstractModelTest
         $model = $this->createModel(array());
 
         $this->assertEquals(array(), $model->getValueNative());
-        $this->assertEquals("*0\r\n", $model->getSerialized());
+        $this->assertEquals("*0\r\n", $model->getMessageSerialized());
 
         $this->assertFalse($model->isRequest());
     }
@@ -26,7 +26,7 @@ class MultiBulkReplyTest extends AbstractModelTest
         $model = $this->createModel(null);
 
         $this->assertEquals(null, $model->getValueNative());
-        $this->assertEquals("*-1\r\n", $model->getSerialized());
+        $this->assertEquals("*-1\r\n", $model->getMessageSerialized());
 
         $this->assertFalse($model->isRequest());
     }
@@ -36,7 +36,7 @@ class MultiBulkReplyTest extends AbstractModelTest
         $model = $this->createModel(array(new BulkReply('test')));
 
         $this->assertEquals(array('test'), $model->getValueNative());
-        $this->assertEquals("*1\r\n$4\r\ntest\r\n", $model->getSerialized());
+        $this->assertEquals("*1\r\n$4\r\ntest\r\n", $model->getMessageSerialized());
 
         $this->assertTrue($model->isRequest());
     }
@@ -46,7 +46,7 @@ class MultiBulkReplyTest extends AbstractModelTest
         $model = $this->createModel(array(new BulkReply('test'), new IntegerReply(123)));
 
         $this->assertEquals(array('test', 123), $model->getValueNative());
-        $this->assertEquals("*2\r\n$4\r\ntest\r\n:123\r\n", $model->getSerialized());
+        $this->assertEquals("*2\r\n$4\r\ntest\r\n:123\r\n", $model->getMessageSerialized());
 
         $this->assertFalse($model->isRequest());
     }

@@ -26,7 +26,7 @@ class BulkReply implements ModelInterface
         return $this->value;
     }
 
-    public function getSerialized()
+    public function getMessageSerialized()
     {
         if ($this->value === null) {
             /* null bulk reply */

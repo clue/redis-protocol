@@ -14,6 +14,6 @@ class StatusReplyTest extends AbstractModelTest
         $model = $this->createModel('OK');
 
         $this->assertEquals('OK', $model->getValueNative());
-        $this->assertEquals("+OK\r\n", $model->getSerialized());
+        $this->assertEquals("+OK\r\n", $model->getMessageSerialized());
     }
 }

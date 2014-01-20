@@ -8,5 +8,5 @@ interface ModelInterface
 
     public function getValueNative();
 
-    public function getSerialized();
+    public function getMessageSerialized();
 }

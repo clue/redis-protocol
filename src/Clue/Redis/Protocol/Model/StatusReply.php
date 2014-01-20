@@ -26,7 +26,7 @@ class StatusReply implements ModelInterface
         return $this->message;
     }
 
-    public function getSerialized()
+    public function getMessageSerialized()
     {
         /* status reply */
         return '+' . $this->message . self::CRLF;

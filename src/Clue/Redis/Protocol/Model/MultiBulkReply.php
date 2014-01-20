@@ -44,7 +44,7 @@ class MultiBulkReply implements ModelInterface
         return $ret;
     }
 
-    public function getSerialized()
+    public function getMessageSerialized()
     {
         if ($this->models === null) {
             /* null multi bulk reply */
@@ -54,7 +54,7 @@ class MultiBulkReply implements ModelInterface
         $ret = '*' . count($this->models) . self::CRLF;
         foreach ($this->models as $one) {
             /* @var $one ModelInterface */
-            $ret .= $one->getSerialized();
+            $ret .= $one->getMessageSerialized();
         }
         return $ret;
     }
