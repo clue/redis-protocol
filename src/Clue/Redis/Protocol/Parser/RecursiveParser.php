@@ -107,15 +107,15 @@ class RecursiveParser implements ParserInterface
      */
     private function readResponse() {
         /* Parse the response based on the reply identifier */
-        $reply = trim($this->readLine());
+        $reply = $this->readLine();
         switch (substr($reply, 0, 1)) {
             /* Error reply */
             case '-':
-                $response = new ErrorReply(trim(substr($reply, 1)));
+                $response = new ErrorReply(substr($reply, 1));
                 break;
                 /* Inline reply */
             case '+':
-                $response = new StatusReply(substr(trim($reply), 1));
+                $response = new StatusReply(substr($reply, 1));
                 break;
                 /* Bulk reply */
             case '$':
@@ -140,7 +140,7 @@ class RecursiveParser implements ParserInterface
                 break;
                 /* Integer reply */
             case ':':
-                $response = new IntegerReply(substr(trim($reply), 1));
+                $response = new IntegerReply(substr($reply, 1));
                 break;
             default:
                 throw new ParserException("Unknown response: {$reply}");
