@@ -58,4 +58,31 @@ class MultiBulkReply implements ModelInterface
         }
         return $ret;
     }
+
+    /**
+     * Checks whether this model represents a valid unified request protocol message
+     *
+     * The new unified protocol was introduced in Redis 1.2, but it became the
+     * standard way for talking with the Redis server in Redis 2.0. The unified
+     * request protocol is what Redis already uses in replies in order to send
+     * list of items to clients, and is called a Multi Bulk Reply.
+     *
+     * @return boolean
+     * @link http://redis.io/topics/protocol
+     */
+    public function isRequest()
+    {
+        if (!$this->models) {
+            return false;
+        }
+
+        foreach ($this->models as $one) {
+            /* @var $one ModelInterface */
+            if (!($one instanceof BulkReply)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

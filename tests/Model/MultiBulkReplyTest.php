@@ -2,6 +2,7 @@
 
 use Clue\Redis\Protocol\Model\MultiBulkReply;
 use Clue\Redis\Protocol\Model\BulkReply;
+use Clue\Redis\Protocol\Model\IntegerReply;
 
 class MultiBulkReplyTest extends AbstractModelTest
 {
@@ -16,6 +17,8 @@ class MultiBulkReplyTest extends AbstractModelTest
 
         $this->assertEquals(array(), $model->getValueNative());
         $this->assertEquals("*0\r\n", $model->getSerialized());
+
+        $this->assertFalse($model->isRequest());
     }
 
     public function testNullMultiBulkReply()
@@ -24,6 +27,8 @@ class MultiBulkReplyTest extends AbstractModelTest
 
         $this->assertEquals(null, $model->getValueNative());
         $this->assertEquals("*-1\r\n", $model->getSerialized());
+
+        $this->assertFalse($model->isRequest());
     }
 
     public function testSingleBulkEnclosed()
@@ -32,6 +37,18 @@ class MultiBulkReplyTest extends AbstractModelTest
 
         $this->assertEquals(array('test'), $model->getValueNative());
         $this->assertEquals("*1\r\n$4\r\ntest\r\n", $model->getSerialized());
+
+        $this->assertTrue($model->isRequest());
+    }
+
+    public function testMixedReply()
+    {
+        $model = $this->createModel(array(new BulkReply('test'), new IntegerReply(123)));
+
+        $this->assertEquals(array('test', 123), $model->getValueNative());
+        $this->assertEquals("*2\r\n$4\r\ntest\r\n:123\r\n", $model->getSerialized());
+
+        $this->assertFalse($model->isRequest());
     }
 
     /**
