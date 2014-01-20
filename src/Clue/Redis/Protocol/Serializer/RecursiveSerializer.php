@@ -2,77 +2,48 @@
 
 namespace Clue\Redis\Protocol\Serializer;
 
-use Clue\Redis\Protocol\Model\Status;
+use Clue\Redis\Protocol\Model\StatusReply;
 use InvalidArgumentException;
 use Exception;
+use Clue\Redis\Protocol\Model\BulkReply;
+use Clue\Redis\Protocol\Model\IntegerReply;
+use Clue\Redis\Protocol\Model\ErrorReply;
+use Clue\Redis\Protocol\Model\MultiBulkReply;
 
 class RecursiveSerializer implements SerializerInterface
 {
-    const CRLF = "\r\n";
-
     public function createRequestMessage(array $args)
     {
-        return $this->createMultiBulkReply(array_map('strval', $args));
+        return $this->createReplyModel($args)->getSerialized();
     }
 
-    public function createReplyMessage($data)
+    public function createRequestModel(array $args)
+    {
+        $models = array();
+        foreach ($args as $arg) {
+            $models []= new BulkReply($arg);
+        }
+        return new MultiBulkReply($models);
+    }
+
+    public function createReplyModel($data)
     {
         if (is_string($data) || $data === null) {
-            return $this->createBulkReply($data);
+            return new BulkReply($data);
         } else if (is_int($data) || is_float($data) || is_bool($data)) {
-            return $this->createIntegerReply($data);
+            return new IntegerReply($data);
         } else if ($data instanceof Exception) {
-            return $this->createErrorReply($data);
+            return new ErrorReply($data->getMessage());
         } else if ($data instanceof Status) {
-            return $this->createStatusReply($data);
+            return new StatusReply($data);
         } else if (is_array($data)) {
-            return $this->createMultiBulkReply($data);
+            $models = array();
+            foreach ($data as $one) {
+                $models []= $this->createReplyModel($one);
+            }
+            return new MultiBulkReply($models);
         } else {
             throw new InvalidArgumentException('Invalid data type passed for serialization');
         }
-    }
-
-    public function createIntegerReply($data)
-    {
-        return ':' . (int)$data . self::CRLF;
-    }
-
-    public function createBulkReply($data)
-    {
-        if ($data === null) {
-            /* null bulk reply */
-            return '$-1' . self::CRLF;
-        }
-        /* bulk reply */
-        return '$' . strlen($data) . self::CRLF . $data . self::CRLF;
-    }
-
-    public function createMultiBulkReply($data)
-    {
-        if ($data === null) {
-            /* null multi bulk reply */
-            return '*-1' . self::CRLF;
-        }
-        /* multi bulk reply */
-        $ret = '*' . count($data) . self::CRLF;
-        foreach ($data as $one) {
-            $ret .= $this->createReplyMessage($one);
-        }
-        return $ret;
-    }
-
-    public function createStatusReply($message)
-    {
-        /* status reply */
-        return '+' . $message . self::CRLF;
-    }
-
-    public function createErrorReply($message)
-    {
-        if ($message instanceof Exception) {
-            $message = $message->getMessage();
-        }
-        /* error status reply */
-        return '-' . $message . self::CRLF;
     }
 }
