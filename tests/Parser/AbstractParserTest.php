@@ -67,6 +67,12 @@ abstract class AbstractParserTest extends TestCase
         $this->assertFalse($this->protocol->hasIncomingModel());
     }
 
+    public function testPartialIncompleteBulkReply()
+    {
+        $this->protocol->pushIncoming("$20\r\nincompl");
+        $this->assertFalse($this->protocol->hasIncomingModel());
+    }
+
     public function testCreateMessageTwo()
     {
         $message = $this->createMessage(array(
