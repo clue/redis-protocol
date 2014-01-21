@@ -2,21 +2,33 @@
 
 namespace Clue\Redis\Protocol;
 
-use Clue\Redis\Protocol\ProtocolInterface;
-use Clue\Redis\Protocol\ProtocolBuffer;
+use Clue\Redis\Protocol\Parser\ParserInterface;
+use Clue\Redis\Protocol\Parser\RecursiveParser;
+use Clue\Redis\Protocol\Serializer\SerializerInterface;
+use Clue\Redis\Protocol\Serializer\RecursiveSerializer;
 
 /**
- * Simple static factory method used to instanciate the best available protocol implementation
+ * Provides factory methods used to instantiate the best available protocol implementation
  */
 class Factory
 {
     /**
-     * instantiate the best available protocol implementation
+     * instantiate the best available protocol parser implementation
      *
-     * @return ProtocolInterface
+     * @return ParserInterface
      */
-    public static function create()
+    public function createParser()
     {
-        return new ProtocolBuffer();
+        return new RecursiveParser();
+    }
+
+    /**
+     * instantiate the best available protocol serializer implementation
+     *
+     * @return SerializerInterface
+     */
+    public function createSerializer()
+    {
+        return new RecursiveSerializer();
     }
 }

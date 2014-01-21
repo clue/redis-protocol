@@ -1,27 +1,35 @@
 <?php
 
-use Clue\Redis\Protocol\ProtocolInterface;
+use Clue\Redis\Protocol\Parser\ParserInterface;
+use Clue\Redis\Protocol\Serializer\RecursiveSerializer;
 // use UnderflowException;
 
-abstract class ProtocolBaseTest extends TestCase
+abstract class AbstractParserTest extends TestCase
 {
     /**
      *
-     * @var ProtocolInterface
+     * @var ParserInterface
      */
     protected $protocol;
 
     abstract protected function createProtocol();
 
+    protected function createMessage($data)
+    {
+        $serializer = new RecursiveSerializer();
+
+        return $serializer->createRequestMessage($data);
+    }
+
     public function setUp()
     {
         $this->protocol = $this->createProtocol();
-        $this->assertInstanceOf('Clue\Redis\Protocol\ProtocolInterface', $this->protocol);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Parser\ParserInterface', $this->protocol);
     }
 
     public function testEmptyHasNoIncoming()
     {
-        $this->assertFalse($this->protocol->hasIncoming());
+        $this->assertFalse($this->protocol->hasIncomingModel());
     }
 
     /**
@@ -29,12 +37,12 @@ abstract class ProtocolBaseTest extends TestCase
      */
     public function testEmptyPopThrowsException()
     {
-        $this->protocol->popIncoming();
+        $this->protocol->popIncomingModel();
     }
 
     public function testCreateMessageOne()
     {
-        $message = $this->protocol->createMessage(array(
+        $message = $this->createMessage(array(
             'test'
         ));
 
@@ -52,16 +60,22 @@ abstract class ProtocolBaseTest extends TestCase
     {
         $this->protocol->pushIncoming($message);
 
-        $this->assertTrue($this->protocol->hasIncoming());
+        $this->assertTrue($this->protocol->hasIncomingModel());
 
-        $this->assertEquals(array('test'), $this->protocol->popIncoming());
+        $this->assertEquals(array('test'), $this->protocol->popIncomingModel()->getValueNative());
 
-        $this->assertFalse($this->protocol->hasIncoming());
+        $this->assertFalse($this->protocol->hasIncomingModel());
+    }
+
+    public function testPartialIncompleteBulkReply()
+    {
+        $this->protocol->pushIncoming("$20\r\nincompl");
+        $this->assertFalse($this->protocol->hasIncomingModel());
     }
 
     public function testCreateMessageTwo()
     {
-        $message = $this->protocol->createMessage(array(
+        $message = $this->createMessage(array(
             'test',
             'second'
         ));
@@ -84,11 +98,11 @@ abstract class ProtocolBaseTest extends TestCase
         $this->protocol->pushIncoming(substr($message, 3, 10));
         $this->protocol->pushIncoming(substr($message, 13));
 
-        $this->assertTrue($this->protocol->hasIncoming());
+        $this->assertTrue($this->protocol->hasIncomingModel());
 
-        $this->assertEquals(array('test', 'second'), $this->protocol->popIncoming());
+        $this->assertEquals(array('test', 'second'), $this->protocol->popIncomingModel()->getValueNative());
 
-        $this->assertFalse($this->protocol->hasIncoming());
+        $this->assertFalse($this->protocol->hasIncomingModel());
     }
 
     public function testParsingStatusReplies()
@@ -97,14 +111,14 @@ abstract class ProtocolBaseTest extends TestCase
         $message = "+PONG\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncomingModel()->getValueNative();
         $this->assertEquals('PONG', $data);
 
         // C: SET key value
         $message = "+OK\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncomingModel()->getValueNative();
         $this->assertEquals('OK', $data);
     }
 
@@ -113,9 +127,10 @@ abstract class ProtocolBaseTest extends TestCase
         $message = "-WRONGTYPE Operation against a key holding the wrong kind of value\r\n";
 
         $this->protocol->pushIncoming($message);
-        $exception = $this->protocol->popIncoming();
+        $exception = $this->protocol->popIncomingModel();
 
-        $this->assertInstanceOf('Clue\Redis\Protocol\ErrorReplyException', $exception);
+        $this->assertInstanceOf('Exception', $exception);
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\ErrorReply', $exception);
         $this->assertEquals('WRONGTYPE Operation against a key holding the wrong kind of value', $exception->getMessage());
     }
 
@@ -125,7 +140,7 @@ abstract class ProtocolBaseTest extends TestCase
         $message = ":1\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncomingModel()->getValueNative();
         $this->assertEquals(1, $data);
     }
 
@@ -135,7 +150,7 @@ abstract class ProtocolBaseTest extends TestCase
         $message = "$6\r\nfoobar\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncomingModel()->getValueNative();
         $this->assertEquals("foobar", $data);
     }
 
@@ -145,7 +160,7 @@ abstract class ProtocolBaseTest extends TestCase
         $message = "$-1\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncomingModel()->getValueNative();
         $this->assertEquals(null, $data);
     }
 
@@ -155,7 +170,7 @@ abstract class ProtocolBaseTest extends TestCase
         $message = "*0\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncomingModel()->getValueNative();
         $this->assertEquals(array(), $data);
     }
 
@@ -165,7 +180,7 @@ abstract class ProtocolBaseTest extends TestCase
         $message = "*-1\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncomingModel()->getValueNative();
         $this->assertEquals(null, $data);
     }
 
@@ -174,7 +189,7 @@ abstract class ProtocolBaseTest extends TestCase
         $message = "*5\r\n:1\r\n:2\r\n:3\r\n:4\r\n$6\r\nfoobar\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncomingModel()->getValueNative();
         $this->assertEquals(array(1, 2, 3, 4, 'foobar'), $data);
     }
 
@@ -183,12 +198,12 @@ abstract class ProtocolBaseTest extends TestCase
         $message = "*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
         $this->protocol->pushIncoming($message);
 
-        $data = $this->protocol->popIncoming();
+        $data = $this->protocol->popIncomingModel()->getValueNative();
         $this->assertEquals(array('foo', null, 'bar'), $data);
     }
 
     /**
-     * @expectedException Clue\Redis\Protocol\ParserException
+     * @expectedException Clue\Redis\Protocol\Parser\ParserException
      */
     public function testParseError()
     {

@@ -1,36 +1,37 @@
 <?php
 
-namespace Clue\Redis\Protocol;
+namespace Clue\Redis\Protocol\Parser;
 
 use UnderflowException;
+use Clue\Redis\Protocol\Model\ModelInterface;
+use Clue\Redis\Protocol\Parser\ParserException;
 
-interface ProtocolInterface
+interface ParserInterface
 {
     /**
      * push a chunk of the redis protocol response into the buffer
      *
      * @param string $dataChunk
-     * @see self::popIncoming()
+     * @throws ParserException if the message can not be parsed
+     * @see self::popIncomingModel()
      */
     public function pushIncoming($dataChunk);
 
     /**
      * parse the response in the incoming buffer and return a parsed message array
      *
-     * @return array
+     * @return ModelInterface
      * @throws UnderflowException if the incoming buffer does not contain a full response
      * @see self::pushIncoming() to add received data to the buffer
-     * @see self::hasIncoming() to check if there's a complete message in the buffer and calling this method is safe
+     * @see self::hasIncomingModel() to check if there's a complete message in the buffer and calling this method is safe
      */
-    public function popIncoming();
+    public function popIncomingModel();
 
     /**
      * check if there's (at least one) a complete message in the incoming buffer
      *
      * @return boolean
-     * @see self::popIncoming()
+     * @see self::popIncomingModel()
      */
-    public function hasIncoming();
-
-    public function createMessage(array $parts);
+    public function hasIncomingModel();
 }

@@ -1,22 +1,27 @@
 <?php
 
-namespace Clue\Redis\Protocol;
+namespace Clue\Redis\Protocol\Parser;
 
-use Clue\Redis\Protocol\ProtocolInterface;
-use Clue\Redis\Protocol\ErrorReplyException;
-use Clue\Redis\Protocol\ParserException;
+use Clue\Redis\Protocol\Parser\ParserInterface;
+use Clue\Redis\Protocol\Model\ModelInterface;
+use Clue\Redis\Protocol\Model\BulkReply;
+use Clue\Redis\Protocol\Model\ErrorReply;
+use Clue\Redis\Protocol\Model\IntegerReply;
+use Clue\Redis\Protocol\Model\MultiBulkReply;
+use Clue\Redis\Protocol\Model\StatusReply;
+use Clue\Redis\Protocol\Parser\ParserException;
 use UnderflowException;
 use Exception;
 
 /**
- * Simple redis wire protocol parser and serializer
+ * Simple recursive redis wire protocol parser
  *
  * Heavily influenced by blocking parser implementation from jpd/redisent.
  *
  * @link https://github.com/jdp/redisent
  * @link http://redis.io/topics/protocol
  */
-class ProtocolBuffer implements ProtocolInterface
+class RecursiveParser implements ParserInterface
 {
     const CRLF = "\r\n";
 
@@ -31,7 +36,7 @@ class ProtocolBuffer implements ProtocolInterface
         $this->tryParsingIncomingMessages();
     }
 
-    public function popIncoming()
+    public function popIncomingModel()
     {
         if (!$this->incomingQueue) {
             throw new UnderflowException('Incoming message queue is empty');
@@ -39,25 +44,16 @@ class ProtocolBuffer implements ProtocolInterface
         return array_shift($this->incomingQueue);
     }
 
-    public function hasIncoming()
+    public function hasIncomingModel()
     {
         return ($this->incomingQueue) ? true : false;
-    }
-
-    public function createMessage(array $args)
-    {
-    	return sprintf('*%d%s%s%s', count($args), ProtocolBuffer::CRLF, implode(array_map(function($arg) {
-            return sprintf('$%d%s%s', strlen($arg), ProtocolBuffer::CRLF, $arg);
-        }, $args), ProtocolBuffer::CRLF), ProtocolBuffer::CRLF);
     }
 
     private function tryParsingIncomingMessages()
     {
         do {
-            try {
-                $message = $this->readResponse();
-            }
-            catch (UnderflowException $e) {
+            $message = $this->readResponse();
+            if ($message === null) {
                 // restore previous position for next parsing attempt
                 $this->incomingOffset = 0;
                 break;
@@ -75,7 +71,7 @@ class ProtocolBuffer implements ProtocolInterface
         $pos = strpos($this->incomingBuffer, "\r\n", $this->incomingOffset);
 
         if ($pos === false) {
-            throw new UnderflowException('Unable to find CRLF sequence');
+            return null;
         }
 
         $ret = (string)substr($this->incomingBuffer, $this->incomingOffset, $pos - $this->incomingOffset);
@@ -88,7 +84,7 @@ class ProtocolBuffer implements ProtocolInterface
     {
         $ret = substr($this->incomingBuffer, $this->incomingOffset, $len);
         if (strlen($ret) !== $len) {
-            throw new UnderflowException('Unable to read requested number of bytes');
+            return null;
         }
 
         $this->incomingOffset += $len;
@@ -102,49 +98,62 @@ class ProtocolBuffer implements ProtocolInterface
      * ripped from jdp/redisent, with some minor modifications to read from
      * the incoming buffer instead of issuing a blocking fread on a stream
      *
-     * @throws UnderflowException if the incoming buffer is incomplete
      * @throws ParserException if the incoming buffer is invalid
-     * @return mixed
+     * @return ModelInterface|null
      * @link https://github.com/jdp/redisent
      */
     private function readResponse() {
         /* Parse the response based on the reply identifier */
-        $reply = trim($this->readLine());
+        $reply = $this->readLine();
+        if ($reply === null) {
+            return null;
+        }
         switch (substr($reply, 0, 1)) {
             /* Error reply */
             case '-':
-                return new ErrorReplyException(trim(substr($reply, 1)));
+                $response = new ErrorReply(substr($reply, 1));
                 break;
                 /* Inline reply */
             case '+':
-                $response = substr(trim($reply), 1);
+                $response = new StatusReply(substr($reply, 1));
                 break;
                 /* Bulk reply */
             case '$':
-                $size = intval(substr($reply, 1));
+                $size = (int)substr($reply, 1);
                 if ($size === -1) {
+                    return new BulkReply(null);
+                }
+                $data = $this->readLength($size);
+                if ($data === null) {
                     return null;
                 }
-                $response = $this->readLength($size);
-                $this->readLength(2); /* discard crlf */
+                if ($this->readLength(2) === null) { /* discard crlf */
+                    return null;
+                }
+                $response = new BulkReply($data);
                 break;
                 /* Multi-bulk reply */
             case '*':
-                $count = intval(substr($reply, 1));
-                if ($count == '-1') {
-                    return NULL;
+                $count = (int)substr($reply, 1);
+                if ($count === -1) {
+                    return new MultiBulkReply(null);
                 }
                 $response = array();
                 for ($i = 0; $i < $count; $i++) {
-                    $response[] = $this->readResponse();
+                    $sub = $this->readResponse();
+                    if ($sub === null) {
+                        return null;
+                    }
+                    $response []= $sub;
                 }
+                $response = new MultiBulkReply($response);
                 break;
                 /* Integer reply */
             case ':':
-                $response = intval(substr(trim($reply), 1));
+                $response = new IntegerReply(substr($reply, 1));
                 break;
             default:
-                throw new ParserException("Unknown response: {$reply}");
+                throw new ParserException('Invalid message can not be parsed: "' . $reply . '"');
                 break;
         }
         /* Party on */
