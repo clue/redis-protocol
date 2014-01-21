@@ -1,13 +1,12 @@
 # redis-protocol [![Build Status](https://travis-ci.org/clue/redis-protocol.png?branch=master)](https://travis-ci.org/clue/redis-protocol)
 
-A Redis protocol parser / serializer written in PHP 
+A streaming redis protocol parser and serializer written in PHP 
 
 ## Introduction
 
 This parser and serializer implementation allows you to parse redis protocol
-messages into native PHP values and vice-versa. This should usually be
-controlled through a redis client implementation which handles the connection
-socket.
+messages into native PHP values and vice-versa. This is usually needed by a
+redis client implementation which also handles the connection socket.
 
 To re-iterate: This is *not* a redis client implementation. This is a protocol
 implementation that is usually used by a redis client implementation. If you're
@@ -16,7 +15,7 @@ for you. If you merely want to connect to a redis server and issue some
 commands, you're probably better off using one of the existing client
 implementations.
 
-## Usage
+## Quickstart example
 
 ```php
 use Clue\Redis\Protocol;
@@ -32,11 +31,65 @@ fwrite($fp, $serializer->createRequestMessage(array('GET', 'name')));
 // the commands are pipelined, so this may parse multiple responses
 $parser->pushIncoming(fread($fp, 4096));
 
-$reply1 = $parser->popIncoming();
-$reply2 = $parser->popIncoming();
+$reply1 = $parser->popIncomingModel();
+$reply2 = $parser->popIncomingModel();
 
-var_dump($reply1->getValueNative()); // (string)"OK"
-var_dump($reply2->getValueNative()); // (string)"value"
+var_dump($reply1->getValueNative()); // string(2) "OK"
+var_dump($reply2->getValueNative()); // string(5) "value"
+```
+
+## Usage
+
+### Factory
+
+The factory helps with instantiating the *right* parser and serializer.
+Eventually the *best* available implementation will be chosen depending on your
+installed extensions. You're also free to instantiate them directly, but this
+will lock you down on a given implementation (which could be okay depending on
+your use-case).
+
+### Parser
+
+The library includes a streaming redis protocol parser. As such, it can safely
+parse redis protocol messages and work with an incomplete data stream. You can
+call:
+
+* `pushIncoming($chunk)` to push an incoming protocol chunk
+  (can be an incomplete message or also several messages)
+* `hasIncomingModel()` to check if there's a complete message in the pipeline
+* `popIncomingModel()` to extract a complete message from the incoming queue.
+
+### Model
+
+Each message (response as well as request) is represented by a model
+implementing the `ModelInterface` that has two methods:
+
+* `getValueNative()` returns the wrapped value.
+* `getMessageSerialized()` returns the serialized protocol messages that will be
+  sent over the wire.
+
+These models are very lightweight and add little overhead. They help keeping the
+code organized and also provide a means to distinguish a single line
+`StatusReply` from a binary-safe `BulkReply`.
+  
+The parser always returns models. Models can also be instantiated directly:
+
+```php
+$model = new Model\IntegerReply(123);
+var_dump($model->getValueNative()); // int(123)
+var_dump($model->getMessageSerialized()); // string(6) ":123\r\n"
+```
+
+### Serializer
+
+The serializer helps with creating the right type of model:
+
+```php
+$model = $serializer->createRequestModel(array('GET', 'key'));
+var_dump($model->getValueNative()); // array(2) { string(3) "GET", string(3) "key" }
+
+$model = $serializer->createReplyModel(array('mixed', 12, array('value')));
+assert($model implement Model\MultiBulkReply);
 ```
 
 ## Install
