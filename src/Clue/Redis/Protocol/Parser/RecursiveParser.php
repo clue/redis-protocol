@@ -36,7 +36,7 @@ class RecursiveParser implements ParserInterface
         $this->tryParsingIncomingMessages();
     }
 
-    public function popIncoming()
+    public function popIncomingModel()
     {
         if (!$this->incomingQueue) {
             throw new UnderflowException('Incoming message queue is empty');
@@ -44,7 +44,7 @@ class RecursiveParser implements ParserInterface
         return array_shift($this->incomingQueue);
     }
 
-    public function hasIncoming()
+    public function hasIncomingModel()
     {
         return ($this->incomingQueue) ? true : false;
     }

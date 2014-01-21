@@ -15,8 +15,8 @@ fwrite($fp, $serializer->createRequestMessage(array('GET', 'name')));
 // the commands are pipelined, so this may parse multiple responses
 $parser->pushIncoming(fread($fp, 4096));
 
-$reply1 = $parser->popIncoming();
-$reply2 = $parser->popIncoming();
+$reply1 = $parser->popIncomingModel();
+$reply2 = $parser->popIncomingModel();
 
 var_dump($reply1->getValueNative()); // string(2) "OK"
 var_dump($reply2->getValueNative()); // string(5) "value"

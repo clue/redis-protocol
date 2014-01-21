@@ -13,7 +13,7 @@ interface ParserInterface
      *
      * @param string $dataChunk
      * @throws ParserException if the message can not be parsed
-     * @see self::popIncoming()
+     * @see self::popIncomingModel()
      */
     public function pushIncoming($dataChunk);
 
@@ -23,15 +23,15 @@ interface ParserInterface
      * @return ModelInterface
      * @throws UnderflowException if the incoming buffer does not contain a full response
      * @see self::pushIncoming() to add received data to the buffer
-     * @see self::hasIncoming() to check if there's a complete message in the buffer and calling this method is safe
+     * @see self::hasIncomingModel() to check if there's a complete message in the buffer and calling this method is safe
      */
-    public function popIncoming();
+    public function popIncomingModel();
 
     /**
      * check if there's (at least one) a complete message in the incoming buffer
      *
      * @return boolean
-     * @see self::popIncoming()
+     * @see self::popIncomingModel()
      */
-    public function hasIncoming();
+    public function hasIncomingModel();
 }

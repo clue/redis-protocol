@@ -22,8 +22,8 @@ $time = microtime(true);
 for ($i = 0, $l = strlen($stream); $i < $l; $i += $cs) {
     $parser->pushIncoming(substr($stream, $i, $cs));
 
-    if ($parser->hasIncoming()) {
-        $parser->popIncoming();
+    if ($parser->hasIncomingModel()) {
+        $parser->popIncomingModel();
     }
 }
 
