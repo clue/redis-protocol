@@ -4,7 +4,7 @@ This file is a manually maintained list of changes for each release. Feel free
 to add your changes here when sending pull requests. Also send corrections if
 you spot any mistakes.
 
-## 0.2.0 (2014-xx-xx)
+## 0.2.0 (2014-01-21)
 
 * Re-organize the whole API into dedicated
   * `Parser` (protocol reader) and

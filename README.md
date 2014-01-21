@@ -101,7 +101,7 @@ your composer.json:
 ```JSON
 {
     "require": {
-        "clue/redis-protocol": "0.1.*"
+        "clue/redis-protocol": "0.2.*"
     }
 }
 ```
