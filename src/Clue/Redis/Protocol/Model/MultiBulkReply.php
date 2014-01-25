@@ -3,6 +3,7 @@
 namespace Clue\Redis\Protocol\Model;
 
 use InvalidArgumentException;
+use Clue\Redis\Protocol\Serializer\SerializerInterface;
 
 class MultiBulkReply implements ModelInterface
 {
@@ -44,19 +45,9 @@ class MultiBulkReply implements ModelInterface
         return $ret;
     }
 
-    public function getMessageSerialized()
+    public function getMessageSerialized(SerializerInterface $serializer)
     {
-        if ($this->models === null) {
-            /* null multi bulk reply */
-            return '*-1' . self::CRLF;
-        }
-        /* multi bulk reply */
-        $ret = '*' . count($this->models) . self::CRLF;
-        foreach ($this->models as $one) {
-            /* @var $one ModelInterface */
-            $ret .= $one->getMessageSerialized();
-        }
-        return $ret;
+        return $serializer->getMultiBulkMessage($this->models);
     }
 
     /**

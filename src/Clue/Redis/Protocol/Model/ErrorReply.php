@@ -3,6 +3,7 @@
 namespace Clue\Redis\Protocol\Model;
 
 use Exception;
+use Clue\Redis\Protocol\Serializer\SerializerInterface;
 
 /**
  *
@@ -26,9 +27,8 @@ class ErrorReply extends Exception implements ModelInterface
         return $this->getMessage();
     }
 
-    public function getMessageSerialized()
+    public function getMessageSerialized(SerializerInterface $serializer)
     {
-        /* error status reply */
-        return '-' . $this->getMessage() . self::CRLF;
+        return $serializer->getErrorMessage($this->getMessage());
     }
 }

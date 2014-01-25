@@ -2,10 +2,10 @@
 
 namespace Clue\Redis\Protocol\Model;
 
+use Clue\Redis\Protocol\Serializer\SerializerInterface;
+
 interface ModelInterface
 {
-    const CRLF = "\r\n";
-
     /**
      * Returns value of this model as a native representation for PHP
      *
@@ -16,7 +16,8 @@ interface ModelInterface
     /**
      * Returns the serialized representation of this protocol message
      *
+     * @param SerializerInterface $serializer;
      * @return string
      */
-    public function getMessageSerialized();
+    public function getMessageSerialized(SerializerInterface $serializer);
 }

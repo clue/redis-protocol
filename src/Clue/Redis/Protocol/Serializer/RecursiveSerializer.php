@@ -9,9 +9,12 @@ use Clue\Redis\Protocol\Model\BulkReply;
 use Clue\Redis\Protocol\Model\IntegerReply;
 use Clue\Redis\Protocol\Model\ErrorReply;
 use Clue\Redis\Protocol\Model\MultiBulkReply;
+use Clue\Redis\Protocol\Model\ModelInterface;
 
 class RecursiveSerializer implements SerializerInterface
 {
+    const CRLF = "\r\n";
+
     public function getRequestMessage(array $args)
     {
         $data = '*' . count($args) . "\r\n";
@@ -32,7 +35,7 @@ class RecursiveSerializer implements SerializerInterface
 
     public function getReplyMessage($data)
     {
-        return $this->createReplyModel($data)->getMessageSerialized();
+        return $this->createReplyModel($data)->getMessageSerialized($this);
     }
 
     public function createReplyModel($data)
@@ -52,5 +55,50 @@ class RecursiveSerializer implements SerializerInterface
         } else {
             throw new InvalidArgumentException('Invalid data type passed for serialization');
         }
+    }
+
+    public function getBulkMessage($data)
+    {
+        if ($data === null) {
+            /* null bulk reply */
+            return '$-1' . self::CRLF;
+        }
+        /* bulk reply */
+        return '$' . strlen($data) . self::CRLF . $data . self::CRLF;
+    }
+
+    public function getErrorMessage($data)
+    {
+        /* error status reply */
+        return '-' . $data . self::CRLF;
+    }
+
+    public function getIntegerMessage($data)
+    {
+        return ':' . $data . self::CRLF;
+    }
+
+    public function getMultiBulkMessage($data)
+    {
+        if ($data === null) {
+            /* null multi bulk reply */
+            return '*-1' . self::CRLF;
+        }
+        /* multi bulk reply */
+        $ret = '*' . count($data) . self::CRLF;
+        foreach ($data as $one) {
+            if ($one instanceof ModelInterface) {
+                $ret .= $one->getMessageSerialized($this);
+            } else {
+                $ret .= $this->getReplyMessage($one);
+            }
+        }
+        return $ret;
+    }
+
+    public function getStatusMessage($data)
+    {
+        /* status reply */
+        return '+' . $data . self::CRLF;
     }
 }

@@ -68,4 +68,14 @@ interface SerializerInterface
      * @return ModelInterface
      */
     public function createReplyModel($data);
+
+    public function getBulkMessage($data);
+
+    public function getErrorMessage($data);
+
+    public function getIntegerMessage($data);
+
+    public function getMultiBulkMessage($data);
+
+    public function getStatusMessage($data);
 }

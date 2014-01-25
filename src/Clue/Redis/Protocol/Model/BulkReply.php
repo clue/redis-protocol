@@ -3,6 +3,7 @@
 namespace Clue\Redis\Protocol\Model;
 
 use Clue\Redis\Protocol\Model\ModelInterface;
+use Clue\Redis\Protocol\Serializer\SerializerInterface;
 
 class BulkReply implements ModelInterface
 {
@@ -26,13 +27,8 @@ class BulkReply implements ModelInterface
         return $this->value;
     }
 
-    public function getMessageSerialized()
+    public function getMessageSerialized(SerializerInterface $serializer)
     {
-        if ($this->value === null) {
-            /* null bulk reply */
-            return '$-1' . self::CRLF;
-        }
-        /* bulk reply */
-        return '$' . strlen($this->value) . self::CRLF . $this->value . self::CRLF;
+        return $serializer->getBulkMessage($this->value);
     }
 }
