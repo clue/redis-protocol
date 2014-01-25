@@ -23,7 +23,7 @@ interface SerializerInterface
      * @return string
      * @see self::createRequestMessage()
      */
-    public function createRequestMessage(array $args);
+    public function getRequestMessage(array $args);
 
     /**
      * create a unified request protocol message model

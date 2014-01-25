@@ -18,7 +18,7 @@ abstract class AbstractParserTest extends TestCase
     {
         $serializer = new RecursiveSerializer();
 
-        return $serializer->createRequestMessage($data);
+        return $serializer->getRequestMessage($data);
     }
 
     public function setUp()

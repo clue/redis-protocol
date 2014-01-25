@@ -97,7 +97,7 @@ abstract class AbstractSerializerTest extends TestCase
         // the model is already unit-tested, so just compare against its message
         $model = $this->serializer->createRequestModel($data);
 
-        $message = $this->serializer->createRequestMessage($data);
+        $message = $this->serializer->getRequestMessage($data);
 
         $this->assertEquals($model->getMessageSerialized(), $message);
     }

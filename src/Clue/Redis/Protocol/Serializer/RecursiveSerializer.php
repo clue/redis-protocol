@@ -12,7 +12,7 @@ use Clue\Redis\Protocol\Model\MultiBulkReply;
 
 class RecursiveSerializer implements SerializerInterface
 {
-    public function createRequestMessage(array $args)
+    public function getRequestMessage(array $args)
     {
         $data = '*' . count($args) . "\r\n";
         foreach ($args as $arg) {
