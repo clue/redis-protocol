@@ -30,6 +30,11 @@ class RecursiveSerializer implements SerializerInterface
         return new MultiBulkReply($models);
     }
 
+    public function getReplyMessage($data)
+    {
+        return $this->createReplyModel($data)->getMessageSerialized();
+    }
+
     public function createReplyModel($data)
     {
         if (is_string($data) || $data === null) {
