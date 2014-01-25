@@ -39,6 +39,21 @@ class MultiBulkReplyTest extends AbstractModelTest
         $this->assertEquals("*1\r\n$4\r\ntest\r\n", $model->getMessageSerialized($this->serializer));
 
         $this->assertTrue($model->isRequest());
+
+        return $model;
+    }
+
+    /**
+     * @depends testSingleBulkEnclosed
+     */
+    public function testStringEnclosedEqualsSingleBulk(MultiBulkReply $expected)
+    {
+        $model = $this->createModel(array('test'));
+
+        $this->assertEquals($expected->getValueNative(), $model->getValueNative());
+        $this->assertEquals($expected->getMessageSerialized($this->serializer), $model->getMessageSerialized($this->serializer));
+
+        $this->assertTrue($model->isRequest());
     }
 
     public function testMixedReply()
@@ -49,13 +64,5 @@ class MultiBulkReplyTest extends AbstractModelTest
         $this->assertEquals("*2\r\n$4\r\ntest\r\n:123\r\n", $model->getMessageSerialized($this->serializer));
 
         $this->assertFalse($model->isRequest());
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testInvalidConstructor()
-    {
-        $this->createModel(array('test'));
     }
 }
