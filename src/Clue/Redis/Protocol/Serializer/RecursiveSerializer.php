@@ -10,6 +10,7 @@ use Clue\Redis\Protocol\Model\IntegerReply;
 use Clue\Redis\Protocol\Model\ErrorReply;
 use Clue\Redis\Protocol\Model\MultiBulkReply;
 use Clue\Redis\Protocol\Model\ModelInterface;
+use Clue\Redis\Protocol\Model\Request;
 
 class RecursiveSerializer implements SerializerInterface
 {
@@ -26,11 +27,7 @@ class RecursiveSerializer implements SerializerInterface
 
     public function createRequestModel($command, array $args = array())
     {
-        $models = array(new BulkReply($command));
-        foreach ($args as $arg) {
-            $models []= new BulkReply($arg);
-        }
-        return new MultiBulkReply($models);
+        return new Request($command, $args);
     }
 
     public function getReplyMessage($data)

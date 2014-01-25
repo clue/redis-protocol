@@ -3,6 +3,7 @@
 namespace Clue\Redis\Protocol\Model;
 
 use InvalidArgumentException;
+use UnexpectedValueException;
 use Clue\Redis\Protocol\Serializer\SerializerInterface;
 
 class MultiBulkReply implements ModelInterface
@@ -69,5 +70,31 @@ class MultiBulkReply implements ModelInterface
         }
 
         return true;
+    }
+
+    public function getRequestModel()
+    {
+        if (!$this->data) {
+            throw new UnexpectedValueException('Null-multi-bulk message can not be represented as a request, must contain string/bulk values');
+        }
+
+        $command = null;
+        $args = array();
+
+        foreach ($this->data as $one) {
+            if ($one instanceof BulkReply) {
+                $one = $one->getValueNative();
+            } elseif (!is_string($one)) {
+                throw new UnexpectedValueException('Message can not be represented as a request, must only contain string/bulk values');
+            }
+
+            if ($command === null) {
+                $command = $one;
+            } else {
+                $args []= $one;
+            }
+        }
+
+        return new Request($command, $args);
     }
 }
