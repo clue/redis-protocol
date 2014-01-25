@@ -15,18 +15,18 @@ class RecursiveSerializer implements SerializerInterface
 {
     const CRLF = "\r\n";
 
-    public function getRequestMessage(array $args)
+    public function getRequestMessage($command, array $args = array())
     {
-        $data = '*' . count($args) . "\r\n";
+        $data = '*' . (count($args) + 1) . "\r\n$" . strlen($command) . "\r\n" . $command . "\r\n";
         foreach ($args as $arg) {
             $data .= '$' . strlen($arg) . "\r\n" . $arg . "\r\n";
         }
         return $data;
     }
 
-    public function createRequestModel(array $args)
+    public function createRequestModel($command, array $args = array())
     {
-        $models = array();
+        $models = array(new BulkReply($command));
         foreach ($args as $arg) {
             $models []= new BulkReply($arg);
         }

@@ -14,13 +14,6 @@ abstract class AbstractParserTest extends TestCase
 
     abstract protected function createProtocol();
 
-    protected function createMessage($data)
-    {
-        $serializer = new RecursiveSerializer();
-
-        return $serializer->getRequestMessage($data);
-    }
-
     public function setUp()
     {
         $this->protocol = $this->createProtocol();
@@ -40,24 +33,11 @@ abstract class AbstractParserTest extends TestCase
         $this->protocol->popIncomingModel();
     }
 
-    public function testCreateMessageOne()
+    public function testParsingMessageOne()
     {
-        $message = $this->createMessage(array(
-            'test'
-        ));
+        // getRequestMessage('test')
+        $message = $expected = "*1\r\n$4\r\ntest\r\n";
 
-        $expected = "*1\r\n$4\r\ntest\r\n";
-        $this->assertEquals($expected, $message);
-
-        return $message;
-    }
-
-    /**
-     * @param string $message
-     * @depends testCreateMessageOne
-     */
-    public function testParsingMessageOne($message)
-    {
         $this->protocol->pushIncoming($message);
 
         $this->assertTrue($this->protocol->hasIncomingModel());
@@ -73,25 +53,11 @@ abstract class AbstractParserTest extends TestCase
         $this->assertFalse($this->protocol->hasIncomingModel());
     }
 
-    public function testCreateMessageTwo()
+    public function testParsingMessageTwoPartial()
     {
-        $message = $this->createMessage(array(
-            'test',
-            'second'
-        ));
+        // getRequestMessage('test', array('second'))
+        $message = "*2\r\n$4\r\ntest\r\n$6\r\nsecond\r\n";
 
-        $expected = "*2\r\n$4\r\ntest\r\n$6\r\nsecond\r\n";
-        $this->assertEquals($expected, $message);
-
-        return $message;
-    }
-
-    /**
-     * @param string $message
-     * @depends testCreateMessageTwo
-     */
-    public function testParsingMessageTwoPartial($message)
-    {
         $this->protocol->pushIncoming(substr($message, 0, 1));
         $this->protocol->pushIncoming(substr($message, 1, 1));
         $this->protocol->pushIncoming(substr($message, 2, 1));

@@ -104,12 +104,12 @@ abstract class AbstractSerializerTest extends TestCase
      * @param array $data
      * @dataProvider provideRequestMessage
      */
-    public function testRequestMessage($data)
+    public function testRequestMessage($command, $args)
     {
         // the model is already unit-tested, so just compare against its message
-        $model = $this->serializer->createRequestModel($data);
+        $model = $this->serializer->createRequestModel($command, $args);
 
-        $message = $this->serializer->getRequestMessage($data);
+        $message = $this->serializer->getRequestMessage($command, $args);
 
         $this->assertEquals($model->getMessageSerialized($this->serializer), $message);
     }
@@ -117,10 +117,10 @@ abstract class AbstractSerializerTest extends TestCase
     public function provideRequestMessage()
     {
         return array(
-            array(array('PING')),
-            array(array('GET', 'a')),
-            array(array('SET', 'a', 'b')),
-            array(array('SET', 'empty', ''))
+            array('PING', array()),
+            array('GET', array('a')),
+            array('SET', array('a', 'b')),
+            array('SET', array('empty', ''))
         );
     }
 

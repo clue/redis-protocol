@@ -19,19 +19,21 @@ interface SerializerInterface
      * then serializing it. While its effect might be equivalent, this method
      * is likely to (i.e. it /could/) provide a faster implementation.
      *
+     * @param string $command
      * @param array $args
      * @return string
      * @see self::createRequestMessage()
      */
-    public function getRequestMessage(array $args);
+    public function getRequestMessage($command, array $args = array());
 
     /**
      * create a unified request protocol message model
      *
+     * @param string $command
      * @param array $args
      * @return MultiBulkReply
      */
-    public function createRequestModel(array $args);
+    public function createRequestModel($command, array $args = array());
 
     /**
      * create a serialized unified protocol reply message
