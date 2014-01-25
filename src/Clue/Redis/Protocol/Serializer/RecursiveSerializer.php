@@ -14,7 +14,11 @@ class RecursiveSerializer implements SerializerInterface
 {
     public function createRequestMessage(array $args)
     {
-        return $this->createRequestModel($args)->getMessageSerialized();
+        $data = '*' . count($args) . "\r\n";
+        foreach ($args as $arg) {
+            $data .= '$' . strlen($arg) . "\r\n" . $arg . "\r\n";
+        }
+        return $data;
     }
 
     public function createRequestModel(array $args)

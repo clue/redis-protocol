@@ -87,6 +87,31 @@ abstract class AbstractSerializerTest extends TestCase
         $this->serializer->createReplyModel((object)array());
     }
 
+    /**
+     *
+     * @param array $data
+     * @dataProvider provideRequestMessage
+     */
+    public function testRequestMessage($data)
+    {
+        // the model is already unit-tested, so just compare against its message
+        $model = $this->serializer->createRequestModel($data);
+
+        $message = $this->serializer->createRequestMessage($data);
+
+        $this->assertEquals($model->getMessageSerialized(), $message);
+    }
+
+    public function provideRequestMessage()
+    {
+        return array(
+            array(array('PING')),
+            array(array('GET', 'a')),
+            array(array('SET', 'a', 'b')),
+            array(array('SET', 'empty', ''))
+        );
+    }
+
 //     public function testBenchCreateRequest()
 //     {
 //         for ($i = 0; $i < 100000; ++$i) {
