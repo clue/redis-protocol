@@ -18,7 +18,7 @@ $time = microtime(true);
 
 $stream = '';
 for ($i = 0; $i < $n; ++$i) {
-    $stream .= $serializer->createRequestMessage(array('set', 'var' . $i, 'value' . $i));
+    $stream .= $serializer->getRequestMessage(array('set', 'var' . $i, 'value' . $i));
 }
 
 echo round(microtime(true) - $time, 3) . 's for serialization' . PHP_EOL;
