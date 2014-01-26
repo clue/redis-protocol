@@ -42,47 +42,22 @@ class RequestParser implements ParserInterface
         return $parsed;
     }
 
-    private function readLine()
-    {
-        $pos = strpos($this->incomingBuffer, "\r\n", $this->incomingOffset);
-
-        if ($pos === false) {
-            return null;
-        }
-
-        $ret = (string)substr($this->incomingBuffer, $this->incomingOffset, $pos - $this->incomingOffset);
-        $this->incomingOffset = $pos + 2;
-
-        return $ret;
-    }
-
-    private function readLength($len)
-    {
-        $ret = substr($this->incomingBuffer, $this->incomingOffset, $len);
-        if (strlen($ret) !== $len) {
-            return null;
-        }
-
-        $this->incomingOffset += $len;
-
-        return $ret;
-    }
-
     /**
      * try to parse request from incoming buffer
      *
      * @throws ParserException if the incoming buffer is invalid
      * @return Request|null
-     * @link https://github.com/jdp/redisent
      */
     private function readRequest() {
-        $line = $this->readLine();
-        if ($line === null) {
+        $crlf = strpos($this->incomingBuffer, "\r\n", $this->incomingOffset);
+        if ($crlf === false) {
             return null;
         }
 
-        if (isset($line[0]) && $line[0] === '*') {
-            $line[0] = ' ';
+        // line starts with a multi-bulk header "*"
+        if (isset($this->incomingBuffer[$this->incomingOffset]) && $this->incomingBuffer[$this->incomingOffset] === '*') {
+            $line = substr($this->incomingBuffer, $this->incomingOffset + 1, $crlf - $this->incomingOffset + 1);
+            $this->incomingOffset = $crlf + 2;
             $count = (int)$line;
 
             if ($count <= 0) {
@@ -104,6 +79,10 @@ class RequestParser implements ParserInterface
             return new Request($command, $args);
         }
 
+        // parse an old inline request instead
+        $line = substr($this->incomingBuffer, $this->incomingOffset, $crlf - $this->incomingBuffer);
+        $this->incomingOffset = $crlf + 2;
+
         $args = preg_split('/ +/', trim($line, ' '));
         $command = array_shift($args);
 
@@ -116,27 +95,32 @@ class RequestParser implements ParserInterface
 
     private function readBulk()
     {
-        $line = $this->readLine();
-        if ($line === null) {
+        $crlf = strpos($this->incomingBuffer, "\r\n", $this->incomingOffset);
+        if ($crlf === false) {
             return null;
         }
-        if (isset($line[0]) && $line[0] !== '$') {
-            throw new ParserException('ERR Protocol error: expected \'$\', got \'' . substr($line, 0, 1) . '\'');
+
+        // line has to start with a bulk header "$"
+        if (!isset($this->incomingBuffer[$this->incomingOffset]) || $this->incomingBuffer[$this->incomingOffset] !== '$') {
+            throw new ParserException('ERR Protocol error: expected \'$\', got \'' . substr($this->incomingBuffer, $this->incomingOffset, 1) . '\'');
         }
 
-        $line[0] = ' ';
+        $line = substr($this->incomingBuffer, $this->incomingOffset + 1, $crlf - $this->incomingOffset + 1);
+        $this->incomingOffset = $crlf + 2;
         $size = (int)$line;
 
         if ($size < 0) {
             throw new ParserException('ERR Protocol error: invalid bulk length');
         }
-        $data = $this->readLength($size);
-        if ($data === null) {
+
+        if (!isset($this->incomingBuffer[$this->incomingOffset + $size + 1])) {
+            // check enough bytes + crlf are buffered
             return null;
         }
-        if ($this->readLength(2) === null) { /* discard crlf */
-            return null;
-        }
-        return $data;
+
+        $ret = substr($this->incomingBuffer, $this->incomingOffset, $size);
+        $this->incomingOffset += $size + 2;
+
+        return $ret;
     }
 }
