@@ -17,7 +17,7 @@ class Factory
      *
      * @return ParserInterface
      */
-    public function createParser()
+    public function createResponseParser()
     {
         return new ResponseParser();
     }

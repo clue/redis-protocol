@@ -5,7 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Clue\Redis\Protocol;
 
 $factory = new Protocol\Factory();
-$parser = $factory->createParser();
+$parser = $factory->createResponseParser();
 $serializer = $factory->createSerializer();
 
 $fp = fsockopen('tcp://localhost', 6379);

@@ -6,7 +6,7 @@ use Clue\Redis\Protocol\Factory;
 require __DIR__ . '/../vendor/autoload.php';
 
 $factory = new Factory();
-$parser = $factory->createParser();
+$parser = $factory->createResponseParser();
 $serializer = $factory->createSerializer();
 
 $n = isset($argv[1]) ? (int)$argv[1] : 10000; // number of dummy messages to parse
