@@ -14,6 +14,6 @@ class ErrorReplyTest extends AbstractModelTest
         $model = $this->createModel('ERR error');
 
         $this->assertEquals('ERR error', $model->getValueNative());
-        $this->assertEquals("-ERR error\r\n", $model->getMessageSerialized());
+        $this->assertEquals("-ERR error\r\n", $model->getMessageSerialized($this->serializer));
     }
 }

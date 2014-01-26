@@ -3,6 +3,7 @@
 namespace Clue\Redis\Protocol\Model;
 
 use Clue\Redis\Protocol\Model\ModelInterface;
+use Clue\Redis\Protocol\Serializer\SerializerInterface;
 
 class IntegerReply implements ModelInterface
 {
@@ -23,8 +24,8 @@ class IntegerReply implements ModelInterface
         return $this->value;
     }
 
-    public function getMessageSerialized()
+    public function getMessageSerialized(SerializerInterface $serializer)
     {
-        return ':' . $this->value . self::CRLF;
+        return $serializer->getIntegerMessage($this->value);
     }
 }

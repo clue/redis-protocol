@@ -2,7 +2,7 @@
 
 use Clue\Redis\Protocol\Parser\ParserInterface;
 use Clue\Redis\Protocol\Serializer\RecursiveSerializer;
-// use UnderflowException;
+use Clue\Redis\Protocol\Parser\MessageBuffer;
 
 abstract class AbstractParserTest extends TestCase
 {
@@ -10,203 +10,59 @@ abstract class AbstractParserTest extends TestCase
      *
      * @var ParserInterface
      */
-    protected $protocol;
+    protected $parser;
 
-    abstract protected function createProtocol();
-
-    protected function createMessage($data)
-    {
-        $serializer = new RecursiveSerializer();
-
-        return $serializer->createRequestMessage($data);
-    }
+    abstract protected function createParser();
 
     public function setUp()
     {
-        $this->protocol = $this->createProtocol();
-        $this->assertInstanceOf('Clue\Redis\Protocol\Parser\ParserInterface', $this->protocol);
+        $this->parser = $this->createParser();
+        $this->assertInstanceOf('Clue\Redis\Protocol\Parser\ParserInterface', $this->parser);
     }
 
-    public function testEmptyHasNoIncoming()
+    public function testParsingMessageOne()
     {
-        $this->assertFalse($this->protocol->hasIncomingModel());
+        // getRequestMessage('test')
+        $message = $expected = "*1\r\n$4\r\ntest\r\n";
+
+        $models = $this->parser->pushIncoming($message);
+        $this->assertCount(1, $models);
+
+        $model = reset($models);
+        $this->assertEquals(array('test'), $model->getValueNative());
     }
 
-    /**
-     * @expectedException UnderflowException
-     */
-    public function testEmptyPopThrowsException()
+    public function testParsingMessageTwoPartial()
     {
-        $this->protocol->popIncomingModel();
+        // getRequestMessage('test', array('second'))
+        $message = "*2\r\n$4\r\ntest\r\n$6\r\nsecond\r\n";
+
+        $this->assertEquals(array(), $this->parser->pushIncoming(substr($message, 0, 1)));
+        $this->assertEquals(array(), $this->parser->pushIncoming(substr($message, 1, 1)));
+        $this->assertEquals(array(), $this->parser->pushIncoming(substr($message, 2, 1)));
+        $this->assertEquals(array(), $this->parser->pushIncoming(substr($message, 3, 10)));
+        $this->assertCount(1, $models = $this->parser->pushIncoming(substr($message, 13)));
+
+        $model = reset($models);
+
+        $this->assertEquals(array('test', 'second'), $model->getValueNative());
     }
 
-    public function testCreateMessageOne()
+    public function testMessageBuffer()
     {
-        $message = $this->createMessage(array(
-            'test'
-        ));
+        $buffer = new MessageBuffer($this->parser);
 
-        $expected = "*1\r\n$4\r\ntest\r\n";
-        $this->assertEquals($expected, $message);
+        $this->assertFalse($buffer->hasIncomingModel());
 
-        return $message;
-    }
+        $data = "*1\r\n$4\r\ntest\r\n";
+        $this->assertCount(1, $models = $buffer->pushIncoming($data));
+        $this->assertTrue($buffer->hasIncomingModel());
 
-    /**
-     * @param string $message
-     * @depends testCreateMessageOne
-     */
-    public function testParsingMessageOne($message)
-    {
-        $this->protocol->pushIncoming($message);
+        $expected = reset($models);
+        $this->assertSame($expected, $buffer->popIncomingModel());
+        $this->assertFalse($buffer->hasIncomingModel());
 
-        $this->assertTrue($this->protocol->hasIncomingModel());
-
-        $this->assertEquals(array('test'), $this->protocol->popIncomingModel()->getValueNative());
-
-        $this->assertFalse($this->protocol->hasIncomingModel());
-    }
-
-    public function testPartialIncompleteBulkReply()
-    {
-        $this->protocol->pushIncoming("$20\r\nincompl");
-        $this->assertFalse($this->protocol->hasIncomingModel());
-    }
-
-    public function testCreateMessageTwo()
-    {
-        $message = $this->createMessage(array(
-            'test',
-            'second'
-        ));
-
-        $expected = "*2\r\n$4\r\ntest\r\n$6\r\nsecond\r\n";
-        $this->assertEquals($expected, $message);
-
-        return $message;
-    }
-
-    /**
-     * @param string $message
-     * @depends testCreateMessageTwo
-     */
-    public function testParsingMessageTwoPartial($message)
-    {
-        $this->protocol->pushIncoming(substr($message, 0, 1));
-        $this->protocol->pushIncoming(substr($message, 1, 1));
-        $this->protocol->pushIncoming(substr($message, 2, 1));
-        $this->protocol->pushIncoming(substr($message, 3, 10));
-        $this->protocol->pushIncoming(substr($message, 13));
-
-        $this->assertTrue($this->protocol->hasIncomingModel());
-
-        $this->assertEquals(array('test', 'second'), $this->protocol->popIncomingModel()->getValueNative());
-
-        $this->assertFalse($this->protocol->hasIncomingModel());
-    }
-
-    public function testParsingStatusReplies()
-    {
-        // C: PING
-        $message = "+PONG\r\n";
-        $this->protocol->pushIncoming($message);
-
-        $data = $this->protocol->popIncomingModel()->getValueNative();
-        $this->assertEquals('PONG', $data);
-
-        // C: SET key value
-        $message = "+OK\r\n";
-        $this->protocol->pushIncoming($message);
-
-        $data = $this->protocol->popIncomingModel()->getValueNative();
-        $this->assertEquals('OK', $data);
-    }
-
-    public function testParsingErrorReply()
-    {
-        $message = "-WRONGTYPE Operation against a key holding the wrong kind of value\r\n";
-
-        $this->protocol->pushIncoming($message);
-        $exception = $this->protocol->popIncomingModel();
-
-        $this->assertInstanceOf('Exception', $exception);
-        $this->assertInstanceOf('Clue\Redis\Protocol\Model\ErrorReply', $exception);
-        $this->assertEquals('WRONGTYPE Operation against a key holding the wrong kind of value', $exception->getMessage());
-    }
-
-    public function testParsingIntegerReply()
-    {
-        // C: INCR mykey
-        $message = ":1\r\n";
-        $this->protocol->pushIncoming($message);
-
-        $data = $this->protocol->popIncomingModel()->getValueNative();
-        $this->assertEquals(1, $data);
-    }
-
-    public function testParsingBulkReply()
-    {
-        // C: GET mykey
-        $message = "$6\r\nfoobar\r\n";
-        $this->protocol->pushIncoming($message);
-
-        $data = $this->protocol->popIncomingModel()->getValueNative();
-        $this->assertEquals("foobar", $data);
-    }
-
-    public function testParsingNullBulkReply()
-    {
-        // C: GET nonexistingkey
-        $message = "$-1\r\n";
-        $this->protocol->pushIncoming($message);
-
-        $data = $this->protocol->popIncomingModel()->getValueNative();
-        $this->assertEquals(null, $data);
-    }
-
-    public function testParsingEmptyMultiBulkReply()
-    {
-        // C: LRANGE nokey 0 1
-        $message = "*0\r\n";
-        $this->protocol->pushIncoming($message);
-
-        $data = $this->protocol->popIncomingModel()->getValueNative();
-        $this->assertEquals(array(), $data);
-    }
-
-    public function testParsingNullMultiBulkReply()
-    {
-        // C: BLPOP key 1
-        $message = "*-1\r\n";
-        $this->protocol->pushIncoming($message);
-
-        $data = $this->protocol->popIncomingModel()->getValueNative();
-        $this->assertEquals(null, $data);
-    }
-
-    public function testParsingMultiBulkReplyWithMixedElements()
-    {
-        $message = "*5\r\n:1\r\n:2\r\n:3\r\n:4\r\n$6\r\nfoobar\r\n";
-        $this->protocol->pushIncoming($message);
-
-        $data = $this->protocol->popIncomingModel()->getValueNative();
-        $this->assertEquals(array(1, 2, 3, 4, 'foobar'), $data);
-    }
-
-    public function testParsingMultiBulkReplyWithNullElement()
-    {
-        $message = "*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
-        $this->protocol->pushIncoming($message);
-
-        $data = $this->protocol->popIncomingModel()->getValueNative();
-        $this->assertEquals(array('foo', null, 'bar'), $data);
-    }
-
-    /**
-     * @expectedException Clue\Redis\Protocol\Parser\ParserException
-     */
-    public function testParseError()
-    {
-        $this->protocol->pushIncoming("invalid string\r\n");
+        $this->setExpectedException('UnderflowException');
+        $buffer->popIncomingModel();
     }
 }

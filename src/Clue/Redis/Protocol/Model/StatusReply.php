@@ -2,6 +2,7 @@
 
 namespace Clue\Redis\Protocol\Model;
 
+use Clue\Redis\Protocol\Serializer\SerializerInterface;
 /**
  *
  * @link http://redis.io/topics/protocol#status-reply
@@ -26,9 +27,8 @@ class StatusReply implements ModelInterface
         return $this->message;
     }
 
-    public function getMessageSerialized()
+    public function getMessageSerialized(SerializerInterface $serializer)
     {
-        /* status reply */
-        return '+' . $this->message . self::CRLF;
+        return $serializer->getStatusMessage($this->message);
     }
 }

@@ -21,18 +21,18 @@ implementations.
 use Clue\Redis\Protocol;
 
 $factory = new Protocol\Factory();
-$parser = $factory->createParser();
+$parser = $factory->createResponseParser();
 $serializer = $factory->createSerializer();
 
 $fp = fsockopen('tcp://localhost', 6379);
-fwrite($fp, $serializer->createRequestMessage(array('SET', 'name', 'value')));
-fwrite($fp, $serializer->createRequestMessage(array('GET', 'name')));
+fwrite($fp, $serializer->getRequestMessage('SET', array('name', 'value')));
+fwrite($fp, $serializer->getRequestMessage('GET', array('name')));
 
 // the commands are pipelined, so this may parse multiple responses
-$parser->pushIncoming(fread($fp, 4096));
+$models = $parser->pushIncoming(fread($fp, 4096));
 
-$reply1 = $parser->popIncomingModel();
-$reply2 = $parser->popIncomingModel();
+$reply1 = array_shift($models);
+$reply2 = array_shift($models);
 
 var_dump($reply1->getValueNative()); // string(2) "OK"
 var_dump($reply2->getValueNative()); // string(5) "value"
@@ -51,13 +51,18 @@ your use-case).
 ### Parser
 
 The library includes a streaming redis protocol parser. As such, it can safely
-parse redis protocol messages and work with an incomplete data stream. You can
-call:
+parse redis protocol messages and work with an incomplete data stream. For this,
+each included parser implements a single method
+`ParserInterface::pushIncoming($chunk)`.
 
-* `pushIncoming($chunk)` to push an incoming protocol chunk
-  (can be an incomplete message or also several messages)
-* `hasIncomingModel()` to check if there's a complete message in the pipeline
-* `popIncomingModel()` to extract a complete message from the incoming queue.
+* The `ResponseParser` is what most redis client implementation would want to
+  use in order to parse incoming response messages from a redis server instance.
+* The `RequestParser` can be used to test messages coming from a redis client or
+  even to implement a redis server.
+* The `MessageBuffer` decorates either of the available parsers and merely
+  offers some helper methods in order to work with single messages:
+  * `hasIncomingModel()` to check if there's a complete message in the pipeline
+  * `popIncomingModel()` to extract a complete message from the incoming queue.
 
 ### Model
 
@@ -65,8 +70,8 @@ Each message (response as well as request) is represented by a model
 implementing the `ModelInterface` that has two methods:
 
 * `getValueNative()` returns the wrapped value.
-* `getMessageSerialized()` returns the serialized protocol messages that will be
-  sent over the wire.
+* `getMessageSerialized($serializer)` returns the serialized protocol messages
+  that will be sent over the wire.
 
 These models are very lightweight and add little overhead. They help keeping the
 code organized and also provide a means to distinguish a single line
@@ -77,15 +82,24 @@ The parser always returns models. Models can also be instantiated directly:
 ```php
 $model = new Model\IntegerReply(123);
 var_dump($model->getValueNative()); // int(123)
-var_dump($model->getMessageSerialized()); // string(6) ":123\r\n"
+var_dump($model->getMessageSerialized($serializer)); // string(6) ":123\r\n"
 ```
 
 ### Serializer
 
-The serializer helps with creating the right type of model:
+The serializer is responsible for creating serialized messages and the
+corresponing message models to be sent across the wire.
 
 ```php
-$model = $serializer->createRequestModel(array('GET', 'key'));
+$message = $serializer->getRequestMessage('ping');
+var_dump($message); // string(14) "$1\r\n*4\r\nping\r\n"
+
+$message = $serializer->getRequestMessage('set', array('key', 'value'));
+var_dump($message); // string(33) "$3\r\n*3\r\nset\r\n*3\r\nkey\r\n*5\r\nvalue\r\n"
+
+$model = $serializer->createRequestModel('get', array('key'));
+var_dump($model->getCommand()); // string(3) "get"
+var_dump($model->getArgs()); // array(1) { string(3) "key" }
 var_dump($model->getValueNative()); // array(2) { string(3) "GET", string(3) "key" }
 
 $model = $serializer->createReplyModel(array('mixed', 12, array('value')));
