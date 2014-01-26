@@ -13,10 +13,10 @@ fwrite($fp, $serializer->getRequestMessage('SET', array('name', 'value')));
 fwrite($fp, $serializer->getRequestMessage('GET', array('name')));
 
 // the commands are pipelined, so this may parse multiple responses
-$parser->pushIncoming(fread($fp, 4096));
+$models = $parser->pushIncoming(fread($fp, 4096));
 
-$reply1 = $parser->popIncomingModel();
-$reply2 = $parser->popIncomingModel();
+$reply1 = array_shift($models);
+$reply2 = array_shift($models);
 
 var_dump($reply1->getValueNative()); // string(2) "OK"
 var_dump($reply2->getValueNative()); // string(5) "value"

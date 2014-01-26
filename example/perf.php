@@ -26,10 +26,6 @@ $time = microtime(true);
 
 for ($i = 0, $l = strlen($stream); $i < $l; $i += $cs) {
     $parser->pushIncoming(substr($stream, $i, $cs));
-
-    if ($parser->hasIncomingModel()) {
-        $parser->popIncomingModel();
-    }
 }
 
 echo round(microtime(true) - $time, 3) . 's for parsing' . PHP_EOL;

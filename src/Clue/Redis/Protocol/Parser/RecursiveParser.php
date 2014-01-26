@@ -10,8 +10,6 @@ use Clue\Redis\Protocol\Model\IntegerReply;
 use Clue\Redis\Protocol\Model\MultiBulkReply;
 use Clue\Redis\Protocol\Model\StatusReply;
 use Clue\Redis\Protocol\Parser\ParserException;
-use UnderflowException;
-use Exception;
 
 /**
  * Simple recursive redis wire protocol parser
@@ -27,30 +25,18 @@ class RecursiveParser implements ParserInterface
 
     private $incomingBuffer = '';
     private $incomingOffset = 0;
-    private $incomingQueue = array();
 
     public function pushIncoming($dataChunk)
     {
         $this->incomingBuffer .= $dataChunk;
 
-        $this->tryParsingIncomingMessages();
-    }
-
-    public function popIncomingModel()
-    {
-        if (!$this->incomingQueue) {
-            throw new UnderflowException('Incoming message queue is empty');
-        }
-        return array_shift($this->incomingQueue);
-    }
-
-    public function hasIncomingModel()
-    {
-        return ($this->incomingQueue) ? true : false;
+        return $this->tryParsingIncomingMessages();
     }
 
     private function tryParsingIncomingMessages()
     {
+        $messages = array();
+
         do {
             $message = $this->readResponse();
             if ($message === null) {
@@ -59,11 +45,13 @@ class RecursiveParser implements ParserInterface
                 break;
             }
 
-            $this->incomingQueue []= $message;
+            $messages []= $message;
 
             $this->incomingBuffer = (string)substr($this->incomingBuffer, $this->incomingOffset);
             $this->incomingOffset = 0;
         } while($this->incomingBuffer !== '');
+
+        return $messages;
     }
 
     private function readLine()
