@@ -16,28 +16,26 @@ class RequestParser implements ParserInterface
     {
         $this->incomingBuffer .= $dataChunk;
 
-        return $this->tryParsingIncomingMessages();
-    }
-
-    private function tryParsingIncomingMessages()
-    {
         $parsed = array();
 
         do {
+            $saved = $this->incomingOffset;
             $message = $this->readRequest();
             if ($message === null) {
                 // restore previous position for next parsing attempt
-                $this->incomingOffset = 0;
+                $this->incomingOffset = $saved;
                 break;
             }
 
             if ($message !== false) {
                 $parsed []= $message;
             }
+        } while($this->incomingBuffer !== '');
 
+        if ($this->incomingOffset !== 0) {
             $this->incomingBuffer = (string)substr($this->incomingBuffer, $this->incomingOffset);
             $this->incomingOffset = 0;
-        } while($this->incomingBuffer !== '');
+        }
 
         return $parsed;
     }
