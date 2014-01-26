@@ -32,7 +32,17 @@ class RecursiveSerializer implements SerializerInterface
 
     public function getReplyMessage($data)
     {
-        return $this->createReplyModel($data)->getMessageSerialized($this);
+        if (is_string($data) || $data === null) {
+            return $this->getBulkMessage($data);
+        } else if (is_int($data) || is_float($data) || is_bool($data)) {
+            return $this->getIntegerMessage($data);
+        } else if ($data instanceof Exception) {
+            return $this->getErrorMessage($data->getMessage());
+        } else if (is_array($data)) {
+            return $this->getMultiBulkMessage($data);
+        } else {
+            throw new InvalidArgumentException('Invalid data type passed for serialization');
+        }
     }
 
     public function createReplyModel($data)
@@ -72,7 +82,7 @@ class RecursiveSerializer implements SerializerInterface
 
     public function getIntegerMessage($data)
     {
-        return ':' . $data . self::CRLF;
+        return ':' . (int)$data . self::CRLF;
     }
 
     public function getMultiBulkMessage($data)
