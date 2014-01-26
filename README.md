@@ -115,16 +115,15 @@ your composer.json:
 ```JSON
 {
     "require": {
-        "clue/redis-protocol": "0.2.*"
+        "clue/redis-protocol": "0.3.*"
     }
 }
 ```
 
 ## License
 
-Its parser and serializer is entirely based on
+Its parser and serializer originally used to be based on
 [jpd/redisent](https://github.com/jdp/redisent), which is released under the ISC
 license, copyright (c) 2009-2012 Justin Poliey <justin@getglue.com>.
 
 Other than that, this library is MIT licensed.
-
