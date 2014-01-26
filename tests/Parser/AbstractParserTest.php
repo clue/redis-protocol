@@ -10,14 +10,14 @@ abstract class AbstractParserTest extends TestCase
      *
      * @var ParserInterface
      */
-    protected $protocol;
+    protected $parser;
 
-    abstract protected function createProtocol();
+    abstract protected function createParser();
 
     public function setUp()
     {
-        $this->protocol = $this->createProtocol();
-        $this->assertInstanceOf('Clue\Redis\Protocol\Parser\ParserInterface', $this->protocol);
+        $this->parser = $this->createParser();
+        $this->assertInstanceOf('Clue\Redis\Protocol\Parser\ParserInterface', $this->parser);
     }
 
     public function testParsingMessageOne()
@@ -25,7 +25,7 @@ abstract class AbstractParserTest extends TestCase
         // getRequestMessage('test')
         $message = $expected = "*1\r\n$4\r\ntest\r\n";
 
-        $models = $this->protocol->pushIncoming($message);
+        $models = $this->parser->pushIncoming($message);
         $this->assertCount(1, $models);
 
         $model = reset($models);
@@ -37,11 +37,11 @@ abstract class AbstractParserTest extends TestCase
         // getRequestMessage('test', array('second'))
         $message = "*2\r\n$4\r\ntest\r\n$6\r\nsecond\r\n";
 
-        $this->assertEquals(array(), $this->protocol->pushIncoming(substr($message, 0, 1)));
-        $this->assertEquals(array(), $this->protocol->pushIncoming(substr($message, 1, 1)));
-        $this->assertEquals(array(), $this->protocol->pushIncoming(substr($message, 2, 1)));
-        $this->assertEquals(array(), $this->protocol->pushIncoming(substr($message, 3, 10)));
-        $this->assertCount(1, $models = $this->protocol->pushIncoming(substr($message, 13)));
+        $this->assertEquals(array(), $this->parser->pushIncoming(substr($message, 0, 1)));
+        $this->assertEquals(array(), $this->parser->pushIncoming(substr($message, 1, 1)));
+        $this->assertEquals(array(), $this->parser->pushIncoming(substr($message, 2, 1)));
+        $this->assertEquals(array(), $this->parser->pushIncoming(substr($message, 3, 10)));
+        $this->assertCount(1, $models = $this->parser->pushIncoming(substr($message, 13)));
 
         $model = reset($models);
 
@@ -50,7 +50,7 @@ abstract class AbstractParserTest extends TestCase
 
     public function testMessageBuffer()
     {
-        $buffer = new MessageBuffer($this->protocol);
+        $buffer = new MessageBuffer($this->parser);
 
         $this->assertFalse($buffer->hasIncomingModel());
 

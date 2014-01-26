@@ -1,31 +1,32 @@
 <?php
 
 use Clue\Redis\Protocol\Parser\ResponseParser;
+use Clue\Redis\Protocol\Parser\ParserInterface;
 
 class RecursiveParserTest extends AbstractParserTest
 {
-    protected function createProtocol()
+    protected function createParser()
     {
         return new ResponseParser();
     }
 
     public function testPartialIncompleteBulkReply()
     {
-        $this->assertEquals(array(), $this->protocol->pushIncoming("$20\r\nincompl"));
+        $this->assertEquals(array(), $this->parser->pushIncoming("$20\r\nincompl"));
     }
 
     public function testParsingStatusReplies()
     {
         // C: PING
         $message = "+PONG\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
 
         $data = reset($models)->getValueNative();
         $this->assertEquals('PONG', $data);
 
         // C: SET key value
         $message = "+OK\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
 
         $data = reset($models)->getValueNative();
         $this->assertEquals('OK', $data);
@@ -35,7 +36,7 @@ class RecursiveParserTest extends AbstractParserTest
     {
         $message = "-WRONGTYPE Operation against a key holding the wrong kind of value\r\n";
 
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
         $exception = reset($models);
 
         $this->assertInstanceOf('Exception', $exception);
@@ -47,7 +48,7 @@ class RecursiveParserTest extends AbstractParserTest
     {
         // C: INCR mykey
         $message = ":1\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
 
         $data = reset($models)->getValueNative();
         $this->assertEquals(1, $data);
@@ -57,7 +58,7 @@ class RecursiveParserTest extends AbstractParserTest
     {
         // C: GET mykey
         $message = "$6\r\nfoobar\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
 
         $data = reset($models)->getValueNative();
         $this->assertEquals("foobar", $data);
@@ -67,7 +68,7 @@ class RecursiveParserTest extends AbstractParserTest
     {
         // C: GET nonexistingkey
         $message = "$-1\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
 
         $data = reset($models)->getValueNative();
         $this->assertEquals(null, $data);
@@ -77,7 +78,7 @@ class RecursiveParserTest extends AbstractParserTest
     {
         // C: LRANGE nokey 0 1
         $message = "*0\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
 
         $data = reset($models)->getValueNative();
         $this->assertEquals(array(), $data);
@@ -87,7 +88,7 @@ class RecursiveParserTest extends AbstractParserTest
     {
         // C: BLPOP key 1
         $message = "*-1\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
 
         $data = reset($models)->getValueNative();
         $this->assertEquals(null, $data);
@@ -96,7 +97,7 @@ class RecursiveParserTest extends AbstractParserTest
     public function testParsingMultiBulkReplyWithMixedElements()
     {
         $message = "*5\r\n:1\r\n:2\r\n:3\r\n:4\r\n$6\r\nfoobar\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
 
         $data = reset($models)->getValueNative();
         $this->assertEquals(array(1, 2, 3, 4, 'foobar'), $data);
@@ -105,7 +106,7 @@ class RecursiveParserTest extends AbstractParserTest
     public function testParsingMultiBulkReplyWithNullElement()
     {
         $message = "*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
 
         $data = reset($models)->getValueNative();
         $this->assertEquals(array('foo', null, 'bar'), $data);
@@ -116,6 +117,6 @@ class RecursiveParserTest extends AbstractParserTest
      */
     public function testParseError()
     {
-        $this->protocol->pushIncoming("invalid string\r\n");
+        $this->parser->pushIncoming("invalid string\r\n");
     }
 }
