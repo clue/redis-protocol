@@ -18,6 +18,13 @@ class FactoryTest extends TestCase
         $this->assertInstanceOf('Clue\Redis\Protocol\Parser\ParserInterface', $parser);
     }
 
+    public function testCreateRequestParser()
+    {
+        $parser = $this->factory->createRequestParser();
+
+        $this->assertInstanceOf('Clue\Redis\Protocol\Parser\ParserInterface', $parser);
+    }
+
     public function testCreateSerializer()
     {
         $serializer = $this->factory->createSerializer();
