@@ -19,7 +19,7 @@ use Clue\Redis\Protocol\Parser\ParserException;
  * @link https://github.com/jdp/redisent
  * @link http://redis.io/topics/protocol
  */
-class RecursiveParser implements ParserInterface
+class ResponseParser implements ParserInterface
 {
     const CRLF = "\r\n";
 

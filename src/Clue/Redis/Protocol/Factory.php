@@ -3,7 +3,7 @@
 namespace Clue\Redis\Protocol;
 
 use Clue\Redis\Protocol\Parser\ParserInterface;
-use Clue\Redis\Protocol\Parser\RecursiveParser;
+use Clue\Redis\Protocol\Parser\ResponseParser;
 use Clue\Redis\Protocol\Serializer\SerializerInterface;
 use Clue\Redis\Protocol\Serializer\RecursiveSerializer;
 
@@ -19,7 +19,7 @@ class Factory
      */
     public function createParser()
     {
-        return new RecursiveParser();
+        return new ResponseParser();
     }
 
     /**

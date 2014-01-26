@@ -1,11 +1,11 @@
 <?php
 
-use Clue\Redis\Protocol\Parser\RecursiveParser;
+use Clue\Redis\Protocol\Parser\ResponseParser;
 
 class RecursiveParserTest extends AbstractParserTest
 {
     protected function createProtocol()
     {
-        return new RecursiveParser();
+        return new ResponseParser();
     }
 }
