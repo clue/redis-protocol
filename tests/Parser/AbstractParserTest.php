@@ -32,11 +32,6 @@ abstract class AbstractParserTest extends TestCase
         $this->assertEquals(array('test'), $model->getValueNative());
     }
 
-    public function testPartialIncompleteBulkReply()
-    {
-        $this->assertEquals(array(), $this->protocol->pushIncoming("$20\r\nincompl"));
-    }
-
     public function testParsingMessageTwoPartial()
     {
         // getRequestMessage('test', array('second'))
@@ -51,111 +46,6 @@ abstract class AbstractParserTest extends TestCase
         $model = reset($models);
 
         $this->assertEquals(array('test', 'second'), $model->getValueNative());
-    }
-
-    public function testParsingStatusReplies()
-    {
-        // C: PING
-        $message = "+PONG\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
-
-        $data = reset($models)->getValueNative();
-        $this->assertEquals('PONG', $data);
-
-        // C: SET key value
-        $message = "+OK\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
-
-        $data = reset($models)->getValueNative();
-        $this->assertEquals('OK', $data);
-    }
-
-    public function testParsingErrorReply()
-    {
-        $message = "-WRONGTYPE Operation against a key holding the wrong kind of value\r\n";
-
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
-        $exception = reset($models);
-
-        $this->assertInstanceOf('Exception', $exception);
-        $this->assertInstanceOf('Clue\Redis\Protocol\Model\ErrorReply', $exception);
-        $this->assertEquals('WRONGTYPE Operation against a key holding the wrong kind of value', $exception->getMessage());
-    }
-
-    public function testParsingIntegerReply()
-    {
-        // C: INCR mykey
-        $message = ":1\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
-
-        $data = reset($models)->getValueNative();
-        $this->assertEquals(1, $data);
-    }
-
-    public function testParsingBulkReply()
-    {
-        // C: GET mykey
-        $message = "$6\r\nfoobar\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
-
-        $data = reset($models)->getValueNative();
-        $this->assertEquals("foobar", $data);
-    }
-
-    public function testParsingNullBulkReply()
-    {
-        // C: GET nonexistingkey
-        $message = "$-1\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
-
-        $data = reset($models)->getValueNative();
-        $this->assertEquals(null, $data);
-    }
-
-    public function testParsingEmptyMultiBulkReply()
-    {
-        // C: LRANGE nokey 0 1
-        $message = "*0\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
-
-        $data = reset($models)->getValueNative();
-        $this->assertEquals(array(), $data);
-    }
-
-    public function testParsingNullMultiBulkReply()
-    {
-        // C: BLPOP key 1
-        $message = "*-1\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
-
-        $data = reset($models)->getValueNative();
-        $this->assertEquals(null, $data);
-    }
-
-    public function testParsingMultiBulkReplyWithMixedElements()
-    {
-        $message = "*5\r\n:1\r\n:2\r\n:3\r\n:4\r\n$6\r\nfoobar\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
-
-        $data = reset($models)->getValueNative();
-        $this->assertEquals(array(1, 2, 3, 4, 'foobar'), $data);
-    }
-
-    public function testParsingMultiBulkReplyWithNullElement()
-    {
-        $message = "*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
-        $this->assertCount(1, $models = $this->protocol->pushIncoming($message));
-
-        $data = reset($models)->getValueNative();
-        $this->assertEquals(array('foo', null, 'bar'), $data);
-    }
-
-    /**
-     * @expectedException Clue\Redis\Protocol\Parser\ParserException
-     */
-    public function testParseError()
-    {
-        $this->protocol->pushIncoming("invalid string\r\n");
     }
 
     public function testMessageBuffer()
