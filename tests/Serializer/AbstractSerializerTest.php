@@ -100,6 +100,14 @@ abstract class AbstractSerializerTest extends TestCase
     }
 
     /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testInvalidReplyData()
+    {
+        $this->serializer->getReplyMessage((object)array());
+    }
+
+    /**
      *
      * @param array $data
      * @dataProvider provideRequestMessage
