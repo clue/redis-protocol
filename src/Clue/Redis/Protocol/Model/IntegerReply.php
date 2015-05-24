@@ -12,7 +12,7 @@ class IntegerReply implements ModelInterface
     /**
      * create integer reply
      *
-     * @param int $data
+     * @param int $value
      */
     public function __construct($value)
     {

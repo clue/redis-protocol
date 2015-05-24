@@ -15,7 +15,6 @@ class ErrorReply extends Exception implements ModelInterface
      * create error status reply (single line error message)
      *
      * @param string|ErrorReplyException $message
-     * @return string
      */
     public function __construct($message, $code = 0, $previous = null)
     {

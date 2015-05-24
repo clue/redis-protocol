@@ -12,7 +12,7 @@ class BulkReply implements ModelInterface
     /**
      * create bulk reply (string reply)
      *
-     * @param string|null $data
+     * @param string|null $value
      */
     public function __construct($value)
     {

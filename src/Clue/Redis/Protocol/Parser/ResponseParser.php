@@ -96,7 +96,7 @@ class ResponseParser implements ParserInterface
         if ($reply === null) {
             return null;
         }
-        switch (substr($reply, 0, 1)) {
+        switch ($reply[0]) {
             /* Error reply */
             case '-':
                 $response = new ErrorReply(substr($reply, 1));

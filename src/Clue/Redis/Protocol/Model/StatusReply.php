@@ -15,7 +15,6 @@ class StatusReply implements ModelInterface
      * create status reply (single line message)
      *
      * @param string|Status $message
-     * @return string
      */
     public function __construct($message)
     {
