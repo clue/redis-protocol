@@ -2,8 +2,6 @@
 
 A streaming redis protocol parser and serializer written in PHP 
 
-## Introduction
-
 This parser and serializer implementation allows you to parse redis protocol
 messages into native PHP values and vice-versa. This is usually needed by a
 redis client implementation which also handles the connection socket.
@@ -14,6 +12,17 @@ looking for an easy way to build your own client implementation, then this is
 for you. If you merely want to connect to a redis server and issue some
 commands, you're probably better off using one of the existing client
 implementations.
+
+**Table of contents**
+
+* [Quickstart example](#quickstart-example)
+* [Usage](#usage)
+  * [Factory](#factory)
+  * [Parser](#parser)
+  * [Model](#model)
+  * [Serializer](#serializer)
+* [Install](#install)
+* [License](#license)
 
 ## Quickstart example
 
@@ -108,17 +117,18 @@ assert($model implement Model\MultiBulkReply);
 
 ## Install
 
-It's very unlikely you'll want to use this protocol parser standalone. It should
-be added as a dependency to your redis client implementation by adding it to
-your composer.json:
+It's very unlikely you'll want to use this protocol parser standalone.
+It should be added as a dependency to your redis client implementation instead.
+The recommended way to install this library is [through Composer](https://getcomposer.org).
+[New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
-```JSON
-{
-    "require": {
-        "clue/redis-protocol": "0.3.*"
-    }
-}
+This will install the latest supported version:
+
+```bash
+$ composer require clue/redis-protocol:^0.3.1
 ```
+
+More details and upgrade guides can be found in the [CHANGELOG](CHANGELOG.md).
 
 ## License
 

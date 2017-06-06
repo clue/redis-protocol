@@ -1,8 +1,9 @@
-# CHANGELOG
+# Changelog
 
-This file is a manually maintained list of changes for each release. Feel free
-to add your changes here when sending pull requests. Also send corrections if
-you spot any mistakes.
+## 0.3.1 (2017-06-06)
+
+* Fix: Fix server-side parsing of legacy inline protocol when multiple requests are processed at once
+  (#12 by @kelunik and #13 by @clue)
 
 ## 0.3.0 (2014-01-27)
 
