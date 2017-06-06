@@ -1,7 +1,6 @@
 <?php
 
 use Clue\Redis\Protocol\Parser\ParserInterface;
-use Clue\Redis\Protocol\Serializer\RecursiveSerializer;
 use Clue\Redis\Protocol\Parser\MessageBuffer;
 
 abstract class AbstractParserTest extends TestCase

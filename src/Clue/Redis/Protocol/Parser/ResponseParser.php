@@ -90,7 +90,8 @@ class ResponseParser implements ParserInterface
      * @return ModelInterface|null
      * @link https://github.com/jdp/redisent
      */
-    private function readResponse() {
+    private function readResponse()
+    {
         /* Parse the response based on the reply identifier */
         $reply = $this->readLine();
         if ($reply === null) {
