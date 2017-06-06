@@ -103,6 +103,15 @@ class RecursiveParserTest extends AbstractParserTest
         $this->assertEquals(array(1, 2, 3, 4, 'foobar'), $data);
     }
 
+    public function testParsingMultiBulkReplyWithIncompletePush()
+    {
+        $this->assertNull($this->parser->pushIncoming("*5\r\n:1\r\n:2\r"));
+        $this->assertCount(1, $models = $this->parser->pushIncoming("\n:3\r\n:4\r\n$6\r\nfoobar\r\n"));
+
+        $data = reset($models)->getValueNative();
+        $this->assertEquals(array(1, 2, 3, 4, 'foobar'), $data);
+    }
+
     public function testParsingMultiBulkReplyWithNullElement()
     {
         $message = "*3\r\n$3\r\nfoo\r\n$-1\r\n$3\r\nbar\r\n";
