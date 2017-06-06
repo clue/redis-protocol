@@ -105,7 +105,7 @@ class RecursiveParserTest extends AbstractParserTest
 
     public function testParsingMultiBulkReplyWithIncompletePush()
     {
-        $this->assertNull($this->parser->pushIncoming("*5\r\n:1\r\n:2\r"));
+        $this->assertCount(0, $this->parser->pushIncoming("*5\r\n:1\r\n:2\r"));
         $this->assertCount(1, $models = $this->parser->pushIncoming("\n:3\r\n:4\r\n$6\r\nfoobar\r\n"));
 
         $data = reset($models)->getValueNative();
