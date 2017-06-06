@@ -2,7 +2,6 @@
 
 namespace Clue\Redis\Protocol\Serializer;
 
-use Clue\Redis\Protocol\Model\StatusReply;
 use InvalidArgumentException;
 use Exception;
 use Clue\Redis\Protocol\Model\BulkReply;
@@ -16,12 +15,33 @@ class RecursiveSerializer implements SerializerInterface
 {
     const CRLF = "\r\n";
 
-    public function getRequestMessage($command, array $args = array())
+    public function getRequestMessage($command, array $args = array(), array $options = array())
     {
-        $data = '*' . (count($args) + 1) . "\r\n$" . strlen($command) . "\r\n" . $command . "\r\n";
-        foreach ($args as $arg) {
-            $data .= '$' . strlen($arg) . "\r\n" . $arg . "\r\n";
+        $argsCount = count($args);
+        $optionsCount = 0;
+        $optionsValueCount = 0;
+        $optionsData = '';
+        foreach ($options as $option => $value) {
+            if ($value) {
+                $optionsCount++;
+                $optionsData .= '$' . strlen($option) . self::CRLF . $option . self::CRLF;
+                if (
+                    !is_bool($value) &&
+                    !is_array($value) &&
+                    (!is_object($value) || (is_object($value) && method_exists($value, '__toString')))
+                ) {
+                    $optionsValueCount++;
+                    $optionsData .= '$' . strlen((string)$value) . self::CRLF . $value . self::CRLF;
+                }
+            }
         }
+        $count = 1 + $argsCount + $optionsCount + $optionsValueCount;
+        $data = '*' . $count . "\r\n$" . strlen($command) . self::CRLF . $command . self::CRLF;
+        foreach ($args as $arg) {
+            $data .= '$' . strlen($arg) . self::CRLF . $arg . self::CRLF;
+        }
+        $data .= $optionsData;
+
         return $data;
     }
 

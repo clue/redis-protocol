@@ -21,10 +21,11 @@ interface SerializerInterface
      *
      * @param string $command
      * @param array $args
+     * @param array $options
      * @return string
      * @see self::createRequestMessage()
      */
-    public function getRequestMessage($command, array $args = array());
+    public function getRequestMessage($command, array $args = array(), array $options = array());
 
     /**
      * create a unified request protocol message model
