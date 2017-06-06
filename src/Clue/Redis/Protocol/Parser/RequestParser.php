@@ -78,7 +78,7 @@ class RequestParser implements ParserInterface
         }
 
         // parse an old inline request instead
-        $line = substr($this->incomingBuffer, $this->incomingOffset, $crlf - $this->incomingBuffer);
+        $line = substr($this->incomingBuffer, $this->incomingOffset, $crlf - $this->incomingOffset);
         $this->incomingOffset = $crlf + 2;
 
         $args = preg_split('/ +/', trim($line, ' '));
