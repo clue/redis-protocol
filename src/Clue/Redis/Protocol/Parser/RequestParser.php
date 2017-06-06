@@ -46,7 +46,8 @@ class RequestParser implements ParserInterface
      * @throws ParserException if the incoming buffer is invalid
      * @return Request|null
      */
-    private function readRequest() {
+    private function readRequest()
+    {
         $crlf = strpos($this->incomingBuffer, "\r\n", $this->incomingOffset);
         if ($crlf === false) {
             return null;

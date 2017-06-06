@@ -1,7 +1,6 @@
 <?php
 
 use Clue\Redis\Protocol\Parser\RequestParser;
-use Clue\Redis\Protocol\Parser\ParserInterface;
 
 class RequestParserTest extends AbstractParserTest
 {
@@ -81,6 +80,27 @@ class RequestParserTest extends AbstractParserTest
         $message = "\r\n";
 
         $this->assertEquals(array(), $this->parser->pushIncoming($message));
+    }
+
+    public function testInlineParsesMultipleRequestsAtOnce()
+    {
+        $message = "hello\r\n\world\r\ntest\r\n";
+
+        $this->assertCount(3, $models = $this->parser->pushIncoming($message));
+    }
+
+
+    public function testEmptyInlineAroundInlineIsIgnored()
+    {
+        $message = "\r\n\r\n" . "ping\r\n\r\n";
+
+        $this->assertCount(1, $models = $this->parser->pushIncoming($message));
+
+        $request = reset($models);
+
+        $this->assertInstanceOf('Clue\Redis\Protocol\Model\Request', $request);
+        $this->assertEquals('ping', $request->getCommand());
+        $this->assertEquals(array(), $request->getArgs());
     }
 
     public function testWhitespaceInlineIsIgnored()

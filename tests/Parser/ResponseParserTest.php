@@ -1,7 +1,6 @@
 <?php
 
 use Clue\Redis\Protocol\Parser\ResponseParser;
-use Clue\Redis\Protocol\Parser\ParserInterface;
 
 class RecursiveParserTest extends AbstractParserTest
 {
