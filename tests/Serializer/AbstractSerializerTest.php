@@ -1,8 +1,6 @@
 <?php
 
 use Clue\Redis\Protocol\Serializer\SerializerInterface;
-use Clue\Redis\Protocol\Model\Status;
-use Clue\Redis\Protocol\Model\ErrorReplyException;
 //use Exception;
 
 abstract class AbstractSerializerTest extends TestCase

@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  PHPUnit:
+    name: PHPUnit (PHP ${{ matrix.php }})
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        php:
+          - 5.4
+          - 5.3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+      - run: composer install
+      - run: vendor/bin/phpunit --coverage-text
