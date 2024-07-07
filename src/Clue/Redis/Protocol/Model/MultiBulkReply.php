@@ -19,8 +19,11 @@ class MultiBulkReply implements ModelInterface
      * @param array|null $data
      * @throws InvalidArgumentException
      */
-    public function __construct(array $data = null)
+    public function __construct($data = null)
     {
+        if ($data !== null && !is_array($data)) { // manual type check to support legacy PHP < 7.1
+            throw new InvalidArgumentException('Argument #1 ($data) expected array|null');
+        }
         $this->data = $data;
     }
 

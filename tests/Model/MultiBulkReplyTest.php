@@ -11,6 +11,12 @@ class MultiBulkReplyTest extends AbstractModelTest
         return new MultiBulkReply($value);
     }
 
+    public function testConstructWithInvalidDataThrows()
+    {
+        $this->setExpectedException('InvalidArgumentException', 'Argument #1 ($data) expected array|null');
+        new MultiBulkReply('data');
+    }
+
     public function testEmptyArray()
     {
         $model = $this->createModel(array());
