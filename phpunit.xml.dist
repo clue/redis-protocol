@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="tests/bootstrap.php"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
->
+<!-- PHPUnit configuration file with old format for legacy PHPUnit -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/4.8/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true">
     <testsuites>
         <testsuite name="Redis Protocol Test Suite">
             <directory>./tests/</directory>
@@ -16,4 +15,7 @@
             <directory>./src/</directory>
         </whitelist>
     </filter>
+    <php>
+        <ini name="error_reporting" value="-1" />
+    </php>
 </phpunit>

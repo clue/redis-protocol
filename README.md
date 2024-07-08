@@ -1,5 +1,8 @@
 # clue/redis-protocol [![Build Status](https://travis-ci.org/clue/php-redis-protocol.png?branch=master)](https://travis-ci.org/clue/php-redis-protocol)
 
+[![CI status](https://github.com/clue/php-redis-protocol/actions/workflows/ci.yml/badge.svg)](https://github.com/clue/php-redis-protocol/actions)
+[![installs on Packagist](https://img.shields.io/packagist/dt/clue/redis-protocol?color=blue&label=installs%20on%20Packagist)](https://packagist.org/packages/clue/redis-protocol)
+
 A streaming redis protocol parser and serializer written in PHP 
 
 This parser and serializer implementation allows you to parse redis protocol
