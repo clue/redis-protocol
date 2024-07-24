@@ -18,6 +18,7 @@ implementations.
 
 **Table of contents**
 
+* [Support us](#support-us)
 * [Quickstart example](#quickstart-example)
 * [Usage](#usage)
   * [Factory](#factory)
@@ -26,6 +27,16 @@ implementations.
   * [Serializer](#serializer)
 * [Install](#install)
 * [License](#license)
+
+## Support us
+
+We invest a lot of time developing, maintaining and updating our awesome
+open-source projects. You can help us sustain this high-quality of our work by
+[becoming a sponsor on GitHub](https://github.com/sponsors/clue). Sponsors get
+numerous benefits in return, see our [sponsoring page](https://github.com/sponsors/clue)
+for details.
+
+Let's take these projects to the next level together! 🚀
 
 ## Quickstart example
 
@@ -139,4 +150,7 @@ Its parser and serializer originally used to be based on
 [jpd/redisent](https://github.com/jdp/redisent), which is released under the ISC
 license, copyright (c) 2009-2012 Justin Poliey <justin@getglue.com>.
 
-Other than that, this library is MIT licensed.
+Other than that, this project is released under the permissive [MIT license](LICENSE).
+
+> Did you know that I offer custom development services and issuing invoices for
+  sponsorships of releases and for contributions? Contact me (@clue) for details.
