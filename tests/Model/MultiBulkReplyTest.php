@@ -36,10 +36,10 @@ class MultiBulkReplyTest extends AbstractModelTest
     /**
      * @param MultiBulkReply $model
      * @depends testNullMultiBulkReply
-     * @expectedException UnexpectedValueException
      */
     public function testNullMultiBulkReplyIsNotARequest(MultiBulkReply $model)
     {
+        $this->setExpectedException('UnexpectedValueException');
         $model->getRequestModel();
     }
 
@@ -91,10 +91,10 @@ class MultiBulkReplyTest extends AbstractModelTest
     /**
      * @param MultiBulkReply $model
      * @depends testMixedReply
-     * @expectedException UnexpectedValueException
      */
     public function testMixedReplyIsNotARequest(MultiBulkReply $model)
     {
+        $this->setExpectedException('UnexpectedValueException');
         $model->getRequestModel();
     }
 

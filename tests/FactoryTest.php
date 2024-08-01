@@ -6,7 +6,10 @@ class FactoryTest extends TestCase
 {
     private $factory;
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setUpFactory()
     {
         $this->factory = new Factory();
     }

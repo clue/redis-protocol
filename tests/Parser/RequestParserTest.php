@@ -110,23 +110,19 @@ class RequestParserTest extends AbstractParserTest
         $this->assertEquals(array(), $this->parser->pushIncoming($message));
     }
 
-    /**
-     * @expectedException Clue\Redis\Protocol\Parser\ParserException
-     */
     public function testInvalidMultiBulkMustContainBulk()
     {
         $message = "*1\r\n:123\r\n";
 
+        $this->setExpectedException('Clue\Redis\Protocol\Parser\ParserException');
         $this->parser->pushIncoming($message);
     }
 
-    /**
-     * @expectedException Clue\Redis\Protocol\Parser\ParserException
-     */
     public function testInvalidBulkLength()
     {
         $message = "*1\r\n$-1\r\n";
 
+        $this->setExpectedException('Clue\Redis\Protocol\Parser\ParserException');
         $this->parser->pushIncoming($message);
     }
 }
