@@ -143,7 +143,6 @@ class ResponseParser implements ParserInterface
                 break;
             default:
                 throw new ParserException('Invalid message can not be parsed: "' . $reply . '"');
-                break;
         }
         /* Party on */
         return $response;
