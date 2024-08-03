@@ -1,5 +1,7 @@
 <?php
 
+namespace Clue\Tests\Redis\Protocol\Parser;
+
 use Clue\Redis\Protocol\Model\Request;
 use Clue\Redis\Protocol\Parser\RequestParser;
 

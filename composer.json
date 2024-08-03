@@ -17,13 +17,13 @@
         "phpunit/phpunit": "^9.6 || ^5.7 || ^4.8.36"
     },
     "autoload": {
-        "psr-0": {
-            "Clue\\Redis\\Protocol": "src/"
+        "psr-4": {
+            "Clue\\Redis\\Protocol\\": "src/"
         }
     }    ,
     "autoload-dev": {
-        "psr-0": {
-            "": "tests/"
+        "psr-4": {
+            "Clue\\Tests\\Redis\\Protocol\\": "tests/"
         }
     }
 }

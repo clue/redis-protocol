@@ -1,6 +1,10 @@
 <?php
 
-class TestCase extends \PHPUnit\Framework\TestCase
+namespace Clue\Tests\Redis\Protocol;
+
+use PHPUnit\Framework\TestCase as BaseTestCase;
+
+class TestCase extends BaseTestCase
 {
     public function setExpectedException($exception, $exceptionMessage = '', $exceptionCode = null)
     {

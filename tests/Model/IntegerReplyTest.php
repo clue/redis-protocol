@@ -1,5 +1,7 @@
 <?php
 
+namespace Clue\Tests\Redis\Protocol\Model;
+
 use Clue\Redis\Protocol\Model\IntegerReply;
 
 class IntegerReplyTest extends AbstractModelTest

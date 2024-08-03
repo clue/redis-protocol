@@ -1,5 +1,7 @@
 <?php
 
+namespace Clue\Tests\Redis\Protocol\Model;
+
 use Clue\Redis\Protocol\Model\BulkReply;
 use Clue\Redis\Protocol\Model\IntegerReply;
 use Clue\Redis\Protocol\Model\MultiBulkReply;

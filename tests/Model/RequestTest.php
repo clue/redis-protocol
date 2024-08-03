@@ -1,5 +1,7 @@
 <?php
 
+namespace Clue\Tests\Redis\Protocol\Model;
+
 use Clue\Redis\Protocol\Model\Request;
 
 class RequestTest extends AbstractModelTest

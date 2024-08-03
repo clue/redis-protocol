@@ -1,7 +1,10 @@
 <?php
 
+namespace Clue\Tests\Redis\Protocol\Parser;
+
 use Clue\Redis\Protocol\Parser\MessageBuffer;
 use Clue\Redis\Protocol\Parser\ParserInterface;
+use Clue\Tests\Redis\Protocol\TestCase;
 
 abstract class AbstractParserTest extends TestCase
 {
