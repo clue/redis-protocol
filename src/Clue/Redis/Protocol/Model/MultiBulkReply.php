@@ -2,9 +2,9 @@
 
 namespace Clue\Redis\Protocol\Model;
 
+use Clue\Redis\Protocol\Serializer\SerializerInterface;
 use InvalidArgumentException;
 use UnexpectedValueException;
-use Clue\Redis\Protocol\Serializer\SerializerInterface;
 
 class MultiBulkReply implements ModelInterface
 {

@@ -2,14 +2,13 @@
 
 namespace Clue\Redis\Protocol\Serializer;
 
-use Clue\Redis\Protocol\Model\StatusReply;
 use InvalidArgumentException;
 use Exception;
 use Clue\Redis\Protocol\Model\BulkReply;
 use Clue\Redis\Protocol\Model\IntegerReply;
 use Clue\Redis\Protocol\Model\ErrorReply;
-use Clue\Redis\Protocol\Model\MultiBulkReply;
 use Clue\Redis\Protocol\Model\ModelInterface;
+use Clue\Redis\Protocol\Model\MultiBulkReply;
 use Clue\Redis\Protocol\Model\Request;
 
 class RecursiveSerializer implements SerializerInterface

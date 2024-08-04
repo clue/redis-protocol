@@ -1,7 +1,7 @@
 <?php
 
-use Clue\Redis\Protocol\Parser\ParserInterface;
 use Clue\Redis\Protocol\Parser\MessageBuffer;
+use Clue\Redis\Protocol\Parser\ParserInterface;
 
 abstract class AbstractParserTest extends TestCase
 {
@@ -25,7 +25,7 @@ abstract class AbstractParserTest extends TestCase
     public function testParsingMessageOne()
     {
         // getRequestMessage('test')
-        $message = $expected = "*1\r\n$4\r\ntest\r\n";
+        $message = "*1\r\n$4\r\ntest\r\n";
 
         $models = $this->parser->pushIncoming($message);
         $this->assertCount(1, $models);

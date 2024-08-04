@@ -2,8 +2,8 @@
 
 namespace Clue\Redis\Protocol\Model;
 
-use Exception;
 use Clue\Redis\Protocol\Serializer\SerializerInterface;
+use Exception;
 
 /**
  *
@@ -14,7 +14,7 @@ class ErrorReply extends Exception implements ModelInterface
     /**
      * create error status reply (single line error message)
      *
-     * @param string|ErrorReplyException $message
+     * @param string $message
      * @return string
      */
     public function __construct($message, $code = 0, $previous = null)

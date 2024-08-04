@@ -2,9 +2,6 @@
 
 namespace Clue\Redis\Protocol\Model;
 
-use Clue\Redis\Protocol\Model\ModelInterface;
-use Clue\Redis\Protocol\Model\BulkReply;
-use Clue\Redis\Protocol\Model\MultiBulkReply;
 use Clue\Redis\Protocol\Serializer\SerializerInterface;
 
 class Request implements ModelInterface
