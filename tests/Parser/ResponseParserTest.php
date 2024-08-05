@@ -120,11 +120,9 @@ class ResponseParserTest extends AbstractParserTest
         $this->assertEquals(array('foo', null, 'bar'), $data);
     }
 
-    /**
-     * @expectedException Clue\Redis\Protocol\Parser\ParserException
-     */
     public function testParseError()
     {
+        $this->setExpectedException('Clue\Redis\Protocol\Parser\ParserException');
         $this->parser->pushIncoming("invalid string\r\n");
     }
 }

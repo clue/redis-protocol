@@ -13,7 +13,10 @@ abstract class AbstractParserTest extends TestCase
 
     abstract protected function createParser();
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setUpParser()
     {
         $this->parser = $this->createParser();
         $this->assertInstanceOf('Clue\Redis\Protocol\Parser\ParserInterface', $this->parser);

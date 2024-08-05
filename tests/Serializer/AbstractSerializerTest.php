@@ -1,16 +1,21 @@
 <?php
 
 use Clue\Redis\Protocol\Serializer\SerializerInterface;
-//use Exception;
 
 abstract class AbstractSerializerTest extends TestCase
 {
+    /** @var SerializerInterface */
+    private $serializer;
+
     /**
      * @return SerializerInterface
      */
     abstract protected function createSerializer();
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setUpSerializer()
     {
         $this->serializer = $this->createSerializer();
     }
@@ -89,19 +94,15 @@ abstract class AbstractSerializerTest extends TestCase
         $this->assertEquals($model->getMessageSerialized($this->serializer), $this->serializer->getReplyMessage(new Exception('ERR failure')));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testInvalidArgument()
     {
+        $this->setExpectedException('InvalidArgumentException');
         $this->serializer->createReplyModel((object)array());
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testInvalidReplyData()
     {
+        $this->setExpectedException('InvalidArgumentException');
         $this->serializer->getReplyMessage((object)array());
     }
 

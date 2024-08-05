@@ -6,7 +6,7 @@ class ErrorReplyTest extends AbstractModelTest
 {
     protected function createModel($value)
     {
-        return new ErrorReply($value);
+        return new ErrorReply((string) $value);
     }
 
     public function testError()

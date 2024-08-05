@@ -8,7 +8,10 @@ abstract class AbstractModelTest extends TestCase
 
     abstract protected function createModel($value);
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setUpSerializer()
     {
         $this->serializer = new RecursiveSerializer();
     }
