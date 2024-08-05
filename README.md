@@ -1,6 +1,7 @@
 # clue/redis-protocol
 
 [![CI status](https://github.com/clue/redis-protocol/actions/workflows/ci.yml/badge.svg)](https://github.com/clue/redis-protocol/actions)
+[![code coverage](https://img.shields.io/badge/code%20coverage-100%25-success)](#tests)
 [![installs on Packagist](https://img.shields.io/packagist/dt/clue/redis-protocol?color=blue&label=installs%20on%20Packagist)](https://packagist.org/packages/clue/redis-protocol)
 
 A streaming Redis protocol (RESP) parser and serializer written in pure PHP.
@@ -26,6 +27,7 @@ implementations.
   * [Model](#model)
   * [Serializer](#serializer)
 * [Install](#install)
+* [Tests](#tests)
 * [License](#license)
 
 ## Support us
@@ -139,10 +141,33 @@ The recommended way to install this library is [through Composer](https://getcom
 This will install the latest supported version:
 
 ```bash
-$ composer require clue/redis-protocol:^0.3.1
+composer require clue/redis-protocol:^0.3.1
 ```
 
 More details and upgrade guides can be found in the [CHANGELOG](CHANGELOG.md).
+
+## Tests
+
+To run the test suite, you first need to clone this repo and then install all
+dependencies [through Composer](https://getcomposer.org/):
+
+```bash
+composer install
+```
+
+To run the test suite, go to the project root and run:
+
+```bash
+vendor/bin/phpunit
+```
+
+The test suite is set up to always ensure 100% code coverage across all
+supported environments. If you have the Xdebug extension installed, you can also
+generate a code coverage report locally like this:
+
+```bash
+XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-text
+```
 
 ## License
 
