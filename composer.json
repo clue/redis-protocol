@@ -1,8 +1,8 @@
 {
     "name": "clue/redis-protocol",
-    "description": "A streaming redis wire protocol parser and serializer implementation in PHP",
-    "keywords": ["streaming", "redis", "protocol", "parser", "serializer"],
-    "homepage": "https://github.com/clue/php-redis-protocol",
+    "description": "A streaming Redis protocol (RESP) parser and serializer written in pure PHP.",
+    "keywords": ["streaming", "redis", "protocol", "resp", "parser", "serializer"],
+    "homepage": "https://github.com/clue/redis-protocol",
     "license": "MIT",
     "authors": [
         {

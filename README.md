@@ -1,23 +1,24 @@
-# clue/redis-protocol [![Build Status](https://travis-ci.org/clue/php-redis-protocol.png?branch=master)](https://travis-ci.org/clue/php-redis-protocol)
+# clue/redis-protocol
 
-[![CI status](https://github.com/clue/php-redis-protocol/actions/workflows/ci.yml/badge.svg)](https://github.com/clue/php-redis-protocol/actions)
+[![CI status](https://github.com/clue/redis-protocol/actions/workflows/ci.yml/badge.svg)](https://github.com/clue/redis-protocol/actions)
 [![installs on Packagist](https://img.shields.io/packagist/dt/clue/redis-protocol?color=blue&label=installs%20on%20Packagist)](https://packagist.org/packages/clue/redis-protocol)
 
-A streaming redis protocol parser and serializer written in PHP 
+A streaming Redis protocol (RESP) parser and serializer written in pure PHP.
 
-This parser and serializer implementation allows you to parse redis protocol
+This parser and serializer implementation allows you to parse Redis protocol
 messages into native PHP values and vice-versa. This is usually needed by a
-redis client implementation which also handles the connection socket.
+Redis client implementation which also handles the connection socket.
 
-To re-iterate: This is *not* a redis client implementation. This is a protocol
-implementation that is usually used by a redis client implementation. If you're
+To re-iterate: This is *not* a Redis client implementation. This is a protocol
+implementation that is usually used by a Redis client implementation. If you're
 looking for an easy way to build your own client implementation, then this is
-for you. If you merely want to connect to a redis server and issue some
+for you. If you merely want to connect to a Redis server and issue some
 commands, you're probably better off using one of the existing client
 implementations.
 
 **Table of contents**
 
+* [Support us](#support-us)
 * [Quickstart example](#quickstart-example)
 * [Usage](#usage)
   * [Factory](#factory)
@@ -26,6 +27,16 @@ implementations.
   * [Serializer](#serializer)
 * [Install](#install)
 * [License](#license)
+
+## Support us
+
+We invest a lot of time developing, maintaining and updating our awesome
+open-source projects. You can help us sustain this high-quality of our work by
+[becoming a sponsor on GitHub](https://github.com/sponsors/clue). Sponsors get
+numerous benefits in return, see our [sponsoring page](https://github.com/sponsors/clue)
+for details.
+
+Let's take these projects to the next level together! 🚀
 
 ## Quickstart example
 
@@ -62,15 +73,15 @@ your use-case).
 
 ### Parser
 
-The library includes a streaming redis protocol parser. As such, it can safely
-parse redis protocol messages and work with an incomplete data stream. For this,
+The library includes a streaming Redis protocol parser. As such, it can safely
+parse Redis protocol messages and work with an incomplete data stream. For this,
 each included parser implements a single method
 `ParserInterface::pushIncoming($chunk)`.
 
-* The `ResponseParser` is what most redis client implementation would want to
-  use in order to parse incoming response messages from a redis server instance.
-* The `RequestParser` can be used to test messages coming from a redis client or
-  even to implement a redis server.
+* The `ResponseParser` is what most Redis client implementation would want to
+  use in order to parse incoming response messages from a Redis server instance.
+* The `RequestParser` can be used to test messages coming from a Redis client or
+  even to implement a Redis server.
 * The `MessageBuffer` decorates either of the available parsers and merely
   offers some helper methods in order to work with single messages:
   * `hasIncomingModel()` to check if there's a complete message in the pipeline
@@ -121,7 +132,7 @@ assert($model implement Model\MultiBulkReply);
 ## Install
 
 It's very unlikely you'll want to use this protocol parser standalone.
-It should be added as a dependency to your redis client implementation instead.
+It should be added as a dependency to your Redis client implementation instead.
 The recommended way to install this library is [through Composer](https://getcomposer.org).
 [New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
@@ -139,4 +150,7 @@ Its parser and serializer originally used to be based on
 [jpd/redisent](https://github.com/jdp/redisent), which is released under the ISC
 license, copyright (c) 2009-2012 Justin Poliey <justin@getglue.com>.
 
-Other than that, this library is MIT licensed.
+Other than that, this project is released under the permissive [MIT license](LICENSE).
+
+> Did you know that I offer custom development services and issuing invoices for
+  sponsorships of releases and for contributions? Contact me (@clue) for details.
