@@ -1,11 +1,8 @@
 <?php
 
-use Clue\Redis\Protocol\ProtocolBuffer;
-use Clue\Redis\Protocol\Factory;
-
 require __DIR__ . '/../vendor/autoload.php';
 
-$factory = new Factory();
+$factory = new Clue\Redis\Protocol\Factory();
 $parser = $factory->createResponseParser();
 $serializer = $factory->createSerializer();
 

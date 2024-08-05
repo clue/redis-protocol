@@ -2,9 +2,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Clue\Redis\Protocol;
-
-$factory = new Protocol\Factory();
+$factory = new Clue\Redis\Protocol\Factory();
 $parser = $factory->createResponseParser();
 $serializer = $factory->createSerializer();
 

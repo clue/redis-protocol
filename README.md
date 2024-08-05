@@ -43,9 +43,11 @@ Let's take these projects to the next level together! 🚀
 ## Quickstart example
 
 ```php
-use Clue\Redis\Protocol;
+<?php
 
-$factory = new Protocol\Factory();
+require __DIR__ . '/vendor/autoload.php';
+
+$factory = new Clue\Redis\Protocol\Factory();
 $parser = $factory->createResponseParser();
 $serializer = $factory->createSerializer();
 
@@ -62,6 +64,8 @@ $reply2 = array_shift($models);
 var_dump($reply1->getValueNative()); // string(2) "OK"
 var_dump($reply2->getValueNative()); // string(5) "value"
 ```
+
+See also the [examples](examples/).
 
 ## Usage
 
