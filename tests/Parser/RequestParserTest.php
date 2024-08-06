@@ -1,5 +1,6 @@
 <?php
 
+use Clue\Redis\Protocol\Model\Request;
 use Clue\Redis\Protocol\Parser\RequestParser;
 
 class RequestParserTest extends AbstractParserTest
@@ -29,7 +30,7 @@ class RequestParserTest extends AbstractParserTest
      * @param Request $expected
      * @depends testSimplePingRequest
      */
-    public function testInlinePingRequest($expected)
+    public function testInlinePingRequest(Request $expected)
     {
         $message = "ping\r\n";
 
@@ -58,7 +59,7 @@ class RequestParserTest extends AbstractParserTest
         $this->assertEquals(array(), $this->parser->pushIncoming("*1\r\n"));
         $this->assertEquals(array(), $this->parser->pushIncoming("$4\r\n"));
         $this->assertEquals(array(), $this->parser->pushIncoming("test"));
-        $this->assertCount(1, $models = $this->parser->pushIncoming("\r\n"));
+        $this->assertCount(1, $this->parser->pushIncoming("\r\n"));
     }
 
     public function testNullMultiBulkRequestIsIgnored()
@@ -86,7 +87,7 @@ class RequestParserTest extends AbstractParserTest
     {
         $message = "hello\r\n\world\r\ntest\r\n";
 
-        $this->assertCount(3, $models = $this->parser->pushIncoming($message));
+        $this->assertCount(3, $this->parser->pushIncoming($message));
     }
 
 

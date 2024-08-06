@@ -2,7 +2,6 @@
 
 namespace Clue\Redis\Protocol\Model;
 
-use Clue\Redis\Protocol\Model\ModelInterface;
 use Clue\Redis\Protocol\Serializer\SerializerInterface;
 
 class BulkReply implements ModelInterface

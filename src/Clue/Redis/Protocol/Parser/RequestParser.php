@@ -2,7 +2,6 @@
 
 namespace Clue\Redis\Protocol\Parser;
 
-use Clue\Redis\Protocol\Parser\ParserException;
 use Clue\Redis\Protocol\Model\Request;
 
 class RequestParser implements ParserInterface

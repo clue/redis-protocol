@@ -2,9 +2,6 @@
 
 namespace Clue\Redis\Protocol\Parser;
 
-use Clue\Redis\Protocol\Model\ModelInterface;
-use Clue\Redis\Protocol\Parser\ParserException;
-
 interface ParserInterface
 {
     /**
@@ -20,8 +17,8 @@ interface ParserInterface
      * message model will be returned once the parser has sufficient data.
      *
      * @param string $dataChunk
-     * @return ModelInterface[] 0+ message models
-     * @throws ParserException if the message can not be parsed
+     * @return \Clue\Redis\Protocol\Model\ModelInterface[] 0+ message models
+     * @throws \Clue\Redis\Protocol\Parser\ParserException if the message can not be parsed
      * @see self::popIncomingModel()
      */
     public function pushIncoming($dataChunk);

@@ -2,7 +2,6 @@
 
 namespace Clue\Redis\Protocol\Serializer;
 
-use Clue\Redis\Protocol\Model\ErrorReplyException;
 use Clue\Redis\Protocol\Model\ModelInterface;
 use Clue\Redis\Protocol\Model\MultiBulkReply;
 
