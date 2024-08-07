@@ -1,6 +1,9 @@
 <?php
 
+namespace Clue\Tests\Redis\Protocol\Model;
+
 use Clue\Redis\Protocol\Serializer\RecursiveSerializer;
+use Clue\Tests\Redis\Protocol\TestCase;
 
 abstract class AbstractModelTest extends TestCase
 {

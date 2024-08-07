@@ -1,5 +1,7 @@
 <?php
 
+namespace Clue\Tests\Redis\Protocol\Parser;
+
 use Clue\Redis\Protocol\Parser\ResponseParser;
 
 class ResponseParserTest extends AbstractParserTest

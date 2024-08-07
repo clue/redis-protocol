@@ -1,5 +1,7 @@
 <?php
 
+namespace Clue\Tests\Redis\Protocol;
+
 use Clue\Redis\Protocol\Factory;
 
 class FactoryTest extends TestCase

@@ -1,6 +1,9 @@
 <?php
 
+namespace Clue\Tests\Redis\Protocol\Serializer;
+
 use Clue\Redis\Protocol\Serializer\SerializerInterface;
+use Clue\Tests\Redis\Protocol\TestCase;
 
 abstract class AbstractSerializerTest extends TestCase
 {
@@ -88,10 +91,10 @@ abstract class AbstractSerializerTest extends TestCase
 
     public function testErrorReply()
     {
-        $model = $this->serializer->createReplyModel(new Exception('ERR failure'));
+        $model = $this->serializer->createReplyModel(new \Exception('ERR failure'));
         $this->assertInstanceOf('Clue\Redis\Protocol\Model\ErrorReply', $model);
         $this->assertEquals('ERR failure', $model->getValueNative());
-        $this->assertEquals($model->getMessageSerialized($this->serializer), $this->serializer->getReplyMessage(new Exception('ERR failure')));
+        $this->assertEquals($model->getMessageSerialized($this->serializer), $this->serializer->getReplyMessage(new \Exception('ERR failure')));
     }
 
     public function testInvalidArgument()
