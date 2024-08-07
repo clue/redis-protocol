@@ -139,16 +139,20 @@ assert($model implement Model\MultiBulkReply);
 
 It's very unlikely you'll want to use this protocol parser standalone.
 It should be added as a dependency to your Redis client implementation instead.
-The recommended way to install this library is [through Composer](https://getcomposer.org).
+The recommended way to install this library is [through Composer](https://getcomposer.org/).
 [New to Composer?](https://getcomposer.org/doc/00-intro.md)
 
 This will install the latest supported version:
 
 ```bash
-composer require clue/redis-protocol:^0.3.1
+composer require clue/redis-protocol:^0.3.2
 ```
 
-More details and upgrade guides can be found in the [CHANGELOG](CHANGELOG.md).
+See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
+
+This project aims to run on any platform and thus does not require any PHP
+extensions and supports running on legacy PHP 5.3 through current PHP 8+.
+It's *highly recommended to use the latest supported PHP version* for this project.
 
 ## Tests
 
